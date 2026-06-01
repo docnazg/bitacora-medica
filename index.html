@@ -168,6 +168,15 @@ textarea.finput{text-align:left;padding:12px 0;min-height:88px;resize:none;line-
 .mt8{margin-top:8px}
 .mt16{margin-top:16px}
 .mb16{margin-bottom:16px}
+
+/* GPS BUTTON */
+.gps-btn{display:flex;align-items:center;gap:8px;background:none;border:none;color:var(--blue);font-size:16px;font-family:inherit;cursor:pointer;touch-action:manipulation;padding:12px 16px;width:100%}
+.gps-btn:active{opacity:.7}
+.gps-dot{width:10px;height:10px;border-radius:5px;background:var(--text2);flex-shrink:0}
+.gps-dot.ok{background:var(--green)}
+.gps-dot.err{background:var(--red)}
+.gps-dot.loading{background:var(--orange);animation:pulse .8s infinite alternate}
+@keyframes pulse{to{opacity:.3}}
 </style>
 </head>
 <body>
@@ -705,7 +714,14 @@ const A = {
     document.getElementById('vform-title').textContent = v ? 'Editar Consulta' : 'Nueva Consulta';
     this.tMeds  = v ? JSON.parse(JSON.stringify(v.medications||[])) : JSON.parse(JSON.stringify(p?.medications||[]));
     this.tDiags = v ? [...(v.diagnoses||[])] : [...(p?.diagnoses||[])];
+    this.tLat   = v?.lat  || null;
+    this.tLng   = v?.lng  || null;
     this.msTarget = 'vf';
+
+    const gpsLabel = this.tLat
+      ? `${this.tLat.toFixed(5)}, ${this.tLng.toFixed(5)}`
+      : 'Capturar ubicación del domicilio';
+    const gpsCls = this.tLat ? 'ok' : '';
 
     document.getElementById('vform-body').innerHTML = `
     <div class="form-sec">
@@ -713,6 +729,15 @@ const A = {
       <div class="card">
         <div class="frow"><span class="flabel">Fecha</span>
           <input class="finput" id="vf-date" type="date" value="${v?.date||today()}"></div>
+      </div>
+    </div>
+    <div class="form-sec">
+      <div class="form-hdr">Ubicación</div>
+      <div class="card">
+        <button class="gps-btn" onclick="A.captureGPS()" id="gps-btn">
+          <span class="gps-dot ${gpsCls}" id="gps-dot"></span>
+          <span id="gps-label">${gpsLabel}</span>
+        </button>
       </div>
     </div>
     <div class="form-sec">
@@ -779,6 +804,8 @@ const A = {
       diagnoses:   [...this.tDiags],
       medications: JSON.parse(JSON.stringify(this.tMeds)),
       notes:       document.getElementById('vf-notes')?.value.trim()||'',
+      lat: this.tLat || null,
+      lng: this.tLng || null,
     };
     this.saveVt(this.pid, d);
     this.back();
@@ -803,6 +830,18 @@ const A = {
     if (!v.weight && !v.bpSystolic && !v.temperature && !v.heartRate)
       h += `<div style="padding:14px 16px;color:var(--text2);font-size:15px">Sin signos registrados</div>`;
     h += '</div>';
+
+    if (v.lat && v.lng) {
+      h += `<div class="sec-hdr">Ubicación</div>
+      <div class="card">
+        <a class="row" href="https://maps.google.com/?q=${v.lat},${v.lng}" target="_blank" style="text-decoration:none">
+          <div class="row-main">
+            <div class="row-title" style="color:var(--blue)">📍 ${v.lat}, ${v.lng}</div>
+            <div class="row-sub">Toca para ver en Google Maps</div>
+          </div>
+        </a>
+      </div>`;
+    }
 
     if (v.diagnoses?.length) {
       h += `<div class="sec-hdr">Diagnósticos</div>
@@ -829,6 +868,87 @@ const A = {
     document.getElementById('vdetail-body').innerHTML = h;
   },
 
+  captureGPS() {
+    const dot = document.getElementById('gps-dot');
+    const lbl = document.getElementById('gps-label');
+    if (!navigator.geolocation) {
+      this.showAlert('No disponible','Tu dispositivo no soporta GPS.');
+      return;
+    }
+    dot.className = 'gps-dot loading';
+    lbl.textContent = 'Obteniendo ubicación...';
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        this.tLat = Math.round(pos.coords.latitude  * 100000) / 100000;
+        this.tLng = Math.round(pos.coords.longitude * 100000) / 100000;
+        dot.className = 'gps-dot ok';
+        lbl.textContent = `${this.tLat}, ${this.tLng}`;
+      },
+      err => {
+        dot.className = 'gps-dot err';
+        lbl.textContent = 'No se pudo obtener ubicación';
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  },
+
+  exportKML(pids = null) {
+    const pts = pids ? this.patients.filter(p => pids.includes(p.id)) : this.patients;
+    const placemarks = [];
+    pts.forEach(p => {
+      (p.visits||[]).forEach(v => {
+        if (!v.lat || !v.lng) return;
+        const diag = (v.diagnoses||[]).join(', ') || 'Sin diagnóstico';
+        const meds = (v.medications||[]).map(m=>`${m.name} ${m.dose}`).join(', ') || '';
+        placemarks.push(`    <Placemark>
+      <name>${esc(p.name)} — ${fmtDate(v.date)}</name>
+      <description><![CDATA[
+        <b>Paciente:</b> ${esc(p.name)}<br>
+        <b>Fecha:</b> ${fmtDate(v.date)}<br>
+        <b>Diagnóstico:</b> ${esc(diag)}<br>
+        ${meds ? `<b>Medicamentos:</b> ${esc(meds)}<br>` : ''}
+        ${v.notes ? `<b>Notas:</b> ${esc(v.notes)}<br>` : ''}
+      ]]></description>
+      <Point><coordinates>${v.lng},${v.lat},0</coordinates></Point>
+    </Placemark>`);
+      });
+    });
+
+    if (!placemarks.length) {
+      this.showAlert('Sin ubicaciones','No hay visitas con coordenadas registradas. Captura la ubicación GPS al registrar cada consulta.');
+      return;
+    }
+
+    const kml = `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Bitácora Médica — Visitas Domiciliarias</name>
+    <Style id="pin">
+      <IconStyle><Icon><href>http://maps.google.com/mapfiles/ms/icons/red-dot.png</href></Icon></IconStyle>
+    </Style>
+${placemarks.join('\n')}
+  </Document>
+</kml>`;
+
+    const blob = new Blob([kml], { type: 'application/vnd.google-earth.kml+xml' });
+    const fname = `visitas_${today()}.kml`;
+    const file = new File([blob], fname, { type: blob.type });
+
+    if (navigator.canShare && navigator.canShare({ files:[file] })) {
+      navigator.share({ files:[file], title: fname }).catch(() => this._downloadBlob(blob, fname));
+    } else {
+      this._downloadBlob(blob, fname);
+    }
+  },
+
+  _downloadBlob(blob, filename) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  },
+
   editVisit() {
     const p = this.pt(this.pid);
     const v = p?.visits.find(v => v.id === this.vid);
@@ -840,6 +960,7 @@ const A = {
     this._sActs = [
       { label:'Exportar todo a Excel', fn: () => this.exportAll() },
       { label:'Exportar por período', fn: () => this.periodMenu() },
+      { label:'Exportar mapa KML (INEGI)', fn: () => this.exportKML() },
       { label:'Eliminar todos los pacientes', dest:true, fn: () => this.confirmDelAll() },
     ];
     this.renderSheet(this._sActs);
@@ -937,6 +1058,7 @@ const A = {
     this._sActs = [
       { label:'Editar Paciente', fn: () => { const p=this.pt(this.pid); this.go('pform',{pt:p}); } },
       { label:'Exportar a Excel', fn: () => this.exportPt(this.pid) },
+      { label:'Exportar mapa KML (INEGI)', fn: () => this.exportKML([this.pid]) },
       { label:'Eliminar Paciente', dest:true, fn: () => this.confirmDelPt(this.pid) },
     ];
     this.renderSheet(this._sActs);
