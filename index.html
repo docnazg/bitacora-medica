@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bitácora">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#007AFF">
+<title>Bitácora Médica</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{
+  --blue:#007AFF;--red:#FF3B30;--green:#34C759;--orange:#FF9500;
+  --gray:#8E8E93;--bg:#F2F2F7;--card:#FFFFFF;--text:#1C1C1E;
+  --text2:#8E8E93;--sep:rgba(60,60,67,.29);
+  --nav:44px;--st:env(safe-area-inset-top,20px);--sb:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;background:var(--bg);color:var(--text);user-select:none;-webkit-user-select:none}
+
+/* NAV BAR */
+.navbar{position:fixed;top:0;left:0;right:0;height:calc(var(--nav) + var(--st));padding-top:var(--st);background:rgba(242,242,247,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:.5px solid var(--sep);z-index:100;display:flex;align-items:flex-end;padding-bottom:0}
+.nbc{display:flex;align-items:center;width:100%;min-height:44px;padding:0 4px}
+.nb-title{flex:1;text-align:center;font-size:17px;font-weight:600}
+.nb-btn{min-width:44px;min-height:44px;display:flex;align-items:center;gap:3px;color:var(--blue);background:none;border:none;font-size:17px;padding:0 8px;cursor:pointer;touch-action:manipulation;font-family:inherit}
+.nb-btn svg{flex-shrink:0}
+
+/* SCREENS */
+#app{position:fixed;inset:0;overflow:hidden}
+.screen{position:absolute;inset:0;background:var(--bg);transform:translateX(100%);transition:transform .35s cubic-bezier(.25,.46,.45,.94);overflow:hidden;display:flex;flex-direction:column;will-change:transform}
+.screen.active{transform:translateX(0)}
+.screen.prev{transform:translateX(-28%)}
+.sbody{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:calc(var(--nav) + var(--st));padding-bottom:calc(var(--sb) + 24px)}
+
+/* SEARCH */
+.searchbar{display:flex;align-items:center;background:rgba(118,118,128,.12);border-radius:10px;padding:7px 10px;gap:6px;margin:8px 16px}
+.searchbar input{flex:1;background:none;border:none;outline:none;font-size:17px;color:var(--text);font-family:inherit}
+.searchbar input::placeholder{color:var(--text2)}
+
+/* LISTS */
+.sec-hdr{font-size:13px;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;padding:0 16px 6px;margin-top:24px}
+.card{background:var(--card);border-radius:12px;margin:0 16px;overflow:hidden}
+.row{display:flex;align-items:center;padding:12px 16px;min-height:44px;position:relative;cursor:pointer;touch-action:manipulation}
+.row:not(:last-child)::after{content:'';position:absolute;bottom:0;left:16px;right:0;height:.5px;background:var(--sep)}
+.row:active{background:rgba(0,0,0,.05)}
+.row-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;margin-right:12px;flex-shrink:0}
+.row-main{flex:1;min-width:0}
+.row-title{font-size:17px;color:var(--text)}
+.row-sub{font-size:13px;color:var(--text2);margin-top:2px}
+.row-val{font-size:17px;color:var(--text2);flex-shrink:0}
+.arrow::after{content:'›';color:var(--text2);font-size:22px;margin-left:6px;flex-shrink:0}
+.badge{background:var(--blue);color:#fff;font-size:12px;font-weight:600;border-radius:10px;padding:2px 7px;margin-left:8px;flex-shrink:0}
+
+/* FORMS */
+.form-sec{margin-top:24px}
+.form-hdr{font-size:13px;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;padding:0 16px 6px}
+.frow{display:flex;align-items:center;padding:0 16px;min-height:44px;position:relative}
+.frow:not(:last-child)::after{content:'';position:absolute;bottom:0;left:16px;right:0;height:.5px;background:var(--sep)}
+.flabel{font-size:17px;color:var(--text);min-width:110px;flex-shrink:0}
+.finput{flex:1;background:none;border:none;outline:none;font-size:17px;color:var(--text);text-align:right;padding:12px 0;font-family:inherit}
+.finput::placeholder{color:var(--text2)}
+.finput.left{text-align:left}
+select.finput{-webkit-appearance:none;cursor:pointer}
+textarea.finput{text-align:left;padding:12px 0;min-height:88px;resize:none;line-height:1.4}
+
+/* TAGS */
+.tags{display:flex;flex-wrap:wrap;gap:8px;padding:10px 16px 12px}
+.tag{background:rgba(0,122,255,.12);color:var(--blue);border-radius:14px;padding:4px 10px;font-size:14px;display:flex;align-items:center;gap:5px}
+.tag-x{background:none;border:none;color:var(--blue);font-size:18px;line-height:1;cursor:pointer;padding:0;touch-action:manipulation}
+.tag-add{display:flex;align-items:center;padding:6px 16px 10px;gap:8px}
+.tag-input{flex:1;background:rgba(118,118,128,.12);border:none;outline:none;border-radius:8px;padding:7px 10px;font-size:15px;color:var(--text);font-family:inherit}
+
+/* MEDS */
+.med-row{display:flex;align-items:center;padding:10px 16px;position:relative}
+.med-row:not(:last-child)::after{content:'';position:absolute;bottom:0;left:16px;right:0;height:.5px;background:var(--sep)}
+.med-info{flex:1}
+.med-name{font-size:16px;font-weight:500}
+.med-detail{font-size:13px;color:var(--text2);margin-top:1px}
+.med-del{color:var(--red);background:none;border:none;font-size:24px;line-height:1;padding:0 0 0 12px;cursor:pointer;touch-action:manipulation}
+.add-row{display:flex;align-items:center;padding:10px 16px;cursor:pointer;touch-action:manipulation}
+.add-row:active{background:rgba(0,0,0,.05)}
+.add-plus{color:var(--blue);font-size:26px;font-weight:300;margin-right:10px;line-height:1}
+.add-label{color:var(--blue);font-size:17px}
+
+/* BUTTONS */
+.btn{display:block;width:calc(100% - 32px);margin:0 16px;padding:14px;border-radius:12px;border:none;font-size:17px;font-weight:600;cursor:pointer;text-align:center;touch-action:manipulation;font-family:inherit}
+.btn:active{opacity:.75}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-danger{background:rgba(255,59,48,.1);color:var(--red);margin-top:12px}
+.btn-secondary{background:rgba(0,122,255,.1);color:var(--blue)}
+
+/* FAB */
+.fab{position:fixed;right:20px;bottom:calc(20px + var(--sb));width:56px;height:56px;border-radius:28px;background:var(--blue);color:#fff;font-size:30px;border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,122,255,.45);cursor:pointer;z-index:50;touch-action:manipulation;font-weight:300}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px;margin-top:16px}
+.stat-card{background:var(--card);border-radius:12px;padding:12px}
+.stat-lbl{font-size:12px;color:var(--text2);margin-bottom:3px}
+.stat-val{font-size:22px;font-weight:700}
+.stat-unit{font-size:13px;font-weight:400;color:var(--text2)}
+
+/* PATIENT HEADER */
+.pt-head{background:var(--card);border-radius:14px;margin:16px 16px 0;padding:16px}
+.pt-avatar{width:58px;height:58px;border-radius:29px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;margin-bottom:10px}
+.pt-name{font-size:22px;font-weight:700}
+.pt-meta{font-size:15px;color:var(--text2);margin-top:3px}
+
+/* VISIT ITEMS */
+.visit-row{display:flex;padding:12px 16px;gap:12px;position:relative;cursor:pointer;touch-action:manipulation}
+.visit-row:not(:last-child)::after{content:'';position:absolute;bottom:0;left:16px;right:0;height:.5px;background:var(--sep)}
+.visit-row:active{background:rgba(0,0,0,.04)}
+.vdate{width:46px;text-align:center;flex-shrink:0}
+.vday{font-size:22px;font-weight:700;color:var(--blue);line-height:1}
+.vmon{font-size:11px;color:var(--text2);text-transform:uppercase;margin-top:1px}
+.vcontent{flex:1;min-width:0}
+.vtitle{font-size:15px;font-weight:500}
+.vchips{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.chip{background:rgba(118,118,128,.12);border-radius:6px;padding:2px 7px;font-size:12px}
+.vnotes{font-size:13px;color:var(--text2);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* BMI colors */
+.bmi-n{color:var(--green)}.bmi-s{color:var(--orange)}.bmi-o{color:var(--red)}.bmi-u{color:var(--blue)}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-bg.show{opacity:1;pointer-events:all}
+.alert{background:rgba(242,242,247,.98);backdrop-filter:blur(40px);border-radius:14px;width:100%;max-width:310px;overflow:hidden;transform:scale(.9);transition:transform .2s}
+.modal-bg.show .alert{transform:scale(1)}
+.alert-body{padding:20px 16px 12px;text-align:center}
+.alert-t{font-size:17px;font-weight:600;margin-bottom:4px}
+.alert-m{font-size:13px;color:var(--text2)}
+.alert-acts{border-top:.5px solid var(--sep);display:flex}
+.alert-btn{flex:1;padding:14px;background:none;border:none;font-size:17px;cursor:pointer;color:var(--blue);touch-action:manipulation;font-family:inherit}
+.alert-btn:not(:last-child){border-right:.5px solid var(--sep)}
+.alert-btn.dest{color:var(--red)}.alert-btn.bold{font-weight:600}
+
+/* ACTION SHEET */
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}
+.sheet-bg.show{opacity:1;pointer-events:all}
+.asheet{position:fixed;bottom:0;left:0;right:0;padding:8px 8px calc(8px + var(--sb));z-index:201;transform:translateY(100%);transition:transform .3s cubic-bezier(.25,.46,.45,.94)}
+.asheet.show{transform:translateY(0)}
+.asheet-grp{background:rgba(242,242,247,.98);backdrop-filter:blur(40px);border-radius:14px;overflow:hidden;margin-bottom:8px}
+.asheet-btn{display:block;width:100%;padding:16px;background:none;border:none;font-size:17px;text-align:center;cursor:pointer;color:var(--blue);position:relative;touch-action:manipulation;font-family:inherit}
+.asheet-btn:not(:last-child)::after{content:'';position:absolute;bottom:0;left:0;right:0;height:.5px;background:var(--sep)}
+.asheet-btn.dest{color:var(--red)}.asheet-btn.cancel{font-weight:600}
+
+/* MED BOTTOM SHEET */
+.bsheet{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-radius:16px 16px 0 0;padding:20px 16px calc(20px + var(--sb));z-index:202;transform:translateY(100%);transition:transform .3s cubic-bezier(.25,.46,.45,.94);box-shadow:0 -2px 20px rgba(0,0,0,.12)}
+.bsheet.show{transform:translateY(0)}
+.bsheet-title{font-size:17px;font-weight:600;text-align:center;margin-bottom:16px}
+.bfield{margin-bottom:12px}
+.bfield label{font-size:13px;color:var(--text2);display:block;margin-bottom:4px}
+.bfield input{width:100%;background:rgba(118,118,128,.12);border:none;outline:none;border-radius:8px;padding:10px 12px;font-size:16px;color:var(--text);font-family:inherit}
+.brow{display:flex;gap:10px}
+.brow .bfield{flex:1}
+
+/* EMPTY STATE */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 32px;text-align:center}
+.empty-ico{font-size:56px;margin-bottom:14px;opacity:.4}
+.empty-t{font-size:20px;font-weight:600;margin-bottom:6px}
+.empty-s{font-size:15px;color:var(--text2)}
+
+.hidden{display:none!important}
+.mt8{margin-top:8px}
+.mt16{margin-top:16px}
+.mb16{margin-bottom:16px}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ===== SCREEN: PATIENTS LIST ===== -->
+<div id="s-patients" class="screen active">
+  <div class="navbar">
+    <div class="nbc">
+      <div style="min-width:44px"></div>
+      <div class="nb-title">Bitácora Médica</div>
+      <button class="nb-btn" onclick="A.globalMenu()" title="Menú">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="5" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1.2" fill="currentColor" stroke="none"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="sbody" id="list-body"></div>
+  <button class="fab" onclick="A.openPatientForm(null)">+</button>
+</div>
+
+<!-- ===== SCREEN: PATIENT FORM ===== -->
+<div id="s-pform" class="screen">
+  <div class="navbar">
+    <div class="nbc">
+      <button class="nb-btn" onclick="A.back()">
+        <svg width="9" height="15" viewBox="0 0 9 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1L1 7.5L8 14"/></svg>
+        Atrás
+      </button>
+      <div class="nb-title" id="pform-title">Nuevo Paciente</div>
+      <button class="nb-btn" style="font-weight:600" onclick="A.savePForm()">Guardar</button>
+    </div>
+  </div>
+  <div class="sbody" id="pform-body"></div>
+</div>
+
+<!-- ===== SCREEN: PATIENT DETAIL ===== -->
+<div id="s-pdetail" class="screen">
+  <div class="navbar">
+    <div class="nbc">
+      <button class="nb-btn" onclick="A.back()">
+        <svg width="9" height="15" viewBox="0 0 9 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1L1 7.5L8 14"/></svg>
+        Pacientes
+      </button>
+      <div class="nb-title" id="pdetail-title"></div>
+      <button class="nb-btn" onclick="A.patientMenu()">
+        <svg width="20" height="4" viewBox="0 0 20 4" fill="currentColor"><circle cx="2" cy="2" r="2"/><circle cx="10" cy="2" r="2"/><circle cx="18" cy="2" r="2"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="sbody" id="pdetail-body"></div>
+  <button class="fab" onclick="A.openVisitForm(null)" title="Nueva consulta">+</button>
+</div>
+
+<!-- ===== SCREEN: VISIT FORM ===== -->
+<div id="s-vform" class="screen">
+  <div class="navbar">
+    <div class="nbc">
+      <button class="nb-btn" onclick="A.back()">
+        <svg width="9" height="15" viewBox="0 0 9 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1L1 7.5L8 14"/></svg>
+        Atrás
+      </button>
+      <div class="nb-title" id="vform-title">Nueva Consulta</div>
+      <button class="nb-btn" style="font-weight:600" onclick="A.saveVForm()">Guardar</button>
+    </div>
+  </div>
+  <div class="sbody" id="vform-body"></div>
+</div>
+
+<!-- ===== SCREEN: VISIT DETAIL ===== -->
+<div id="s-vdetail" class="screen">
+  <div class="navbar">
+    <div class="nbc">
+      <button class="nb-btn" onclick="A.back()">
+        <svg width="9" height="15" viewBox="0 0 9 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1L1 7.5L8 14"/></svg>
+        Historial
+      </button>
+      <div class="nb-title" id="vdetail-title">Consulta</div>
+      <button class="nb-btn" style="font-size:15px" onclick="A.editVisit()">Editar</button>
+    </div>
+  </div>
+  <div class="sbody" id="vdetail-body"></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal-bg" onclick="A.closeModal()">
+  <div class="alert" onclick="event.stopPropagation()">
+    <div class="alert-body">
+      <div class="alert-t" id="modal-t"></div>
+      <div class="alert-m" id="modal-m"></div>
+    </div>
+    <div class="alert-acts" id="modal-acts"></div>
+  </div>
+</div>
+
+<!-- ACTION SHEET -->
+<div class="sheet-bg" id="sheet-bg" onclick="A.closeSheet()"></div>
+<div class="asheet" id="asheet">
+  <div class="asheet-grp" id="asheet-grp"></div>
+  <div class="asheet-grp">
+    <button class="asheet-btn cancel" onclick="A.closeSheet()">Cancelar</button>
+  </div>
+</div>
+
+<!-- RANGE SHEET -->
+<div class="bsheet" id="range-sheet">
+  <div class="bsheet-title">Rango personalizado</div>
+  <div class="brow">
+    <div class="bfield"><label>Desde</label><input type="date" id="rs-from" class="bottom-sheet-input" style="width:100%;background:rgba(118,118,128,.12);border:none;outline:none;border-radius:8px;padding:10px 12px;font-size:16px;color:var(--text);font-family:inherit"></div>
+    <div class="bfield"><label>Hasta</label><input type="date" id="rs-to" class="bottom-sheet-input" style="width:100%;background:rgba(118,118,128,.12);border:none;outline:none;border-radius:8px;padding:10px 12px;font-size:16px;color:var(--text);font-family:inherit"></div>
+  </div>
+  <button class="btn btn-primary mt16" onclick="A.exportRange(document.getElementById('rs-from').value, document.getElementById('rs-to').value)">Exportar Excel</button>
+</div>
+
+<!-- MED SHEET -->
+<div class="bsheet" id="med-sheet">
+  <div class="bsheet-title">Agregar Medicamento</div>
+  <div class="bfield"><label>Medicamento</label><input id="ms-name" placeholder="ej. Metformina" autocomplete="off"></div>
+  <div class="brow">
+    <div class="bfield"><label>Dosis</label><input id="ms-dose" placeholder="ej. 500mg"></div>
+    <div class="bfield"><label>Frecuencia</label><input id="ms-freq" placeholder="ej. Cada 12h"></div>
+  </div>
+  <button class="btn btn-primary mt16" onclick="A.addMedFromSheet()">Agregar</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// ── UTILS ──────────────────────────────────────────────────────────
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const today = () => new Date().toISOString().slice(0,10);
+const MO = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+function fmtDate(s) {
+  if (!s) return '';
+  const [y,m,d] = s.split('-');
+  return `${+d} ${MO[+m-1]} ${y}`;
+}
+
+function calcAge(dob) {
+  if (!dob) return null;
+  const b = new Date(dob + 'T12:00:00'), now = new Date();
+  let a = now.getFullYear() - b.getFullYear();
+  if (now.getMonth() < b.getMonth() || (now.getMonth() === b.getMonth() && now.getDate() < b.getDate())) a--;
+  return a;
+}
+
+function calcBMI(w, h) {
+  if (!w || !h) return null;
+  return Math.round(w / Math.pow(h/100, 2) * 10) / 10;
+}
+
+function bmiInfo(bmi) {
+  if (!bmi) return {txt:'—', cls:''};
+  if (bmi < 18.5) return {txt:`${bmi} Bajo peso`, cls:'bmi-u'};
+  if (bmi < 25)   return {txt:`${bmi} Normal`,    cls:'bmi-n'};
+  if (bmi < 30)   return {txt:`${bmi} Sobrepeso`, cls:'bmi-s'};
+  return {txt:`${bmi} Obesidad`, cls:'bmi-o'};
+}
+
+function initials(name) {
+  return (name||'?').trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2);
+}
+
+function avatarColor(name) {
+  const cols = ['#007AFF','#34C759','#FF9500','#FF2D55','#AF52DE','#5AC8FA','#FF6B35','#00C7BE'];
+  let h = 0;
+  for (let i=0; i<(name||'').length; i++) h = (h*31 + name.charCodeAt(i)) | 0;
+  return cols[Math.abs(h) % cols.length];
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── APP ────────────────────────────────────────────────────────────
+const A = {
+  patients: [],
+  stack: ['patients'],
+  pid: null,   // current patient id
+  vid: null,   // current visit id
+  ePt: null,   // patient being edited
+  eVt: null,   // visit being edited
+  tMeds: [],   // temp medications
+  tDiags: [],  // temp diagnoses
+  msTarget: 'pf', // med sheet target prefix
+  _mActs: [],
+  _sActs: [],
+
+  // ── STORAGE ──
+  load() {
+    try { this.patients = JSON.parse(localStorage.getItem('bm-patients') || '[]'); }
+    catch { this.patients = []; }
+  },
+  persist() {
+    localStorage.setItem('bm-patients', JSON.stringify(this.patients));
+  },
+
+  // ── PATIENT CRUD ──
+  pt(id) { return this.patients.find(p => p.id === id); },
+
+  savePt(d) {
+    if (d.id) {
+      const i = this.patients.findIndex(p => p.id === d.id);
+      if (i >= 0) this.patients[i] = {...this.patients[i], ...d};
+    } else {
+      d.id = uid(); d.createdAt = new Date().toISOString(); d.visits = [];
+      this.patients.unshift(d);
+    }
+    this.persist();
+  },
+
+  delPt(id) {
+    this.patients = this.patients.filter(p => p.id !== id);
+    this.persist();
+  },
+
+  saveVt(pid, d) {
+    const p = this.pt(pid);
+    if (!p) return;
+    if (!p.visits) p.visits = [];
+    if (d.id) {
+      const i = p.visits.findIndex(v => v.id === d.id);
+      if (i >= 0) p.visits[i] = {...p.visits[i], ...d};
+    } else {
+      d.id = uid(); d.createdAt = new Date().toISOString();
+      p.visits.unshift(d);
+    }
+    this.persist();
+  },
+
+  delVt(pid, vid) {
+    const p = this.pt(pid);
+    if (p) { p.visits = p.visits.filter(v => v.id !== vid); this.persist(); }
+  },
+
+  // ── NAVIGATION ──
+  go(screen, params={}) {
+    const cur = this.stack[this.stack.length-1];
+    document.getElementById(`s-${cur}`)?.classList.add('prev');
+    this.stack.push(screen);
+    if (screen === 'pform')   { this.ePt = params.pt||null; this.renderPForm(); }
+    if (screen === 'pdetail') { this.pid = params.pid; this.renderPDetail(); }
+    if (screen === 'vform')   { this.eVt = params.vt||null; this.renderVForm(); }
+    if (screen === 'vdetail') { this.vid = params.vid; this.renderVDetail(); }
+    setTimeout(() => document.getElementById(`s-${screen}`)?.classList.add('active'), 10);
+  },
+
+  back() {
+    if (this.stack.length <= 1) return;
+    const cur = this.stack.pop();
+    const el = document.getElementById(`s-${cur}`);
+    if (el) { el.classList.remove('active'); setTimeout(() => el.style.transform='', 400); }
+    const prev = this.stack[this.stack.length-1];
+    document.getElementById(`s-${prev}`)?.classList.remove('prev');
+    if (prev === 'patients') this.renderList();
+    if (prev === 'pdetail')  this.renderPDetail();
+    if (prev === 'vdetail')  this.renderVDetail();
+  },
+
+  // ── RENDER: LIST ──
+  renderList() {
+    const body = document.getElementById('list-body');
+    const q = body.querySelector('.searchbar input')?.value || '';
+    const all = q ? this.patients.filter(p => p.name.toLowerCase().includes(q.toLowerCase())) : this.patients;
+
+    let h = `<div style="padding:0 0 4px"><div class="searchbar">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#8E8E93" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="5.5"/><path d="M11.5 11.5l3 3"/></svg>
+      <input placeholder="Buscar pacientes" oninput="A.filterList(this.value)" value="${esc(q)}">
+    </div></div>`;
+
+    if (!this.patients.length) {
+      h += `<div class="empty"><div class="empty-ico">👨‍⚕️</div><div class="empty-t">Sin pacientes</div><div class="empty-s">Toca + para agregar tu primer paciente</div></div>`;
+    } else if (!all.length) {
+      h += `<div class="empty"><div class="empty-ico">🔍</div><div class="empty-t">Sin resultados</div></div>`;
+    } else {
+      h += `<div class="sec-hdr">${all.length} PACIENTE${all.length!==1?'S':''}</div><div class="card">`;
+      all.forEach(p => {
+        const age = calcAge(p.dob);
+        const last = p.visits?.length ? `Últ: ${fmtDate(p.visits[0].date)}` : 'Sin consultas';
+        h += `<div class="row arrow" onclick="A.go('pdetail',{pid:'${p.id}'})">
+          <div class="row-icon" style="background:${avatarColor(p.name)}">${esc(initials(p.name))}</div>
+          <div class="row-main">
+            <div class="row-title">${esc(p.name)}</div>
+            <div class="row-sub">${age!=null?age+' años · ':''}${p.sex==='M'?'Masc':p.sex==='F'?'Fem':''} · ${last}</div>
+          </div>
+          ${p.visits?.length ? `<span class="badge">${p.visits.length}</span>` : ''}
+        </div>`;
+      });
+      h += '</div>';
+    }
+    body.innerHTML = h;
+  },
+
+  filterList(q) {
+    const all = q ? this.patients.filter(p => p.name.toLowerCase().includes(q.toLowerCase())) : this.patients;
+    const card = document.querySelector('#list-body .card');
+    const hdr = document.querySelector('#list-body .sec-hdr');
+    if (!card) return this.renderList();
+    if (hdr) hdr.textContent = `${all.length} PACIENTE${all.length!==1?'S':''}`;
+    if (!all.length) { card.innerHTML = '<div class="empty"><div class="empty-ico">🔍</div><div class="empty-t">Sin resultados</div></div>'; return; }
+    card.innerHTML = all.map(p => {
+      const age = calcAge(p.dob);
+      const last = p.visits?.length ? `Últ: ${fmtDate(p.visits[0].date)}` : 'Sin consultas';
+      return `<div class="row arrow" onclick="A.go('pdetail',{pid:'${p.id}'})">
+        <div class="row-icon" style="background:${avatarColor(p.name)}">${esc(initials(p.name))}</div>
+        <div class="row-main"><div class="row-title">${esc(p.name)}</div>
+        <div class="row-sub">${age!=null?age+' años · ':''}${p.sex==='M'?'Masc':p.sex==='F'?'Fem':''} · ${last}</div></div>
+        ${p.visits?.length ? `<span class="badge">${p.visits.length}</span>` : ''}
+      </div>`;
+    }).join('');
+  },
+
+  // ── RENDER: PATIENT FORM ──
+  openPatientForm(pt) { this.go('pform', {pt}); },
+
+  renderPForm() {
+    const p = this.ePt;
+    document.getElementById('pform-title').textContent = p ? 'Editar Paciente' : 'Nuevo Paciente';
+    this.tMeds  = p ? JSON.parse(JSON.stringify(p.medications||[])) : [];
+    this.tDiags = p ? [...(p.diagnoses||[])] : [];
+    this.msTarget = 'pf';
+
+    document.getElementById('pform-body').innerHTML = `
+    <div class="form-sec">
+      <div class="form-hdr">Datos Personales</div>
+      <div class="card">
+        <div class="frow"><span class="flabel">Nombre</span>
+          <input class="finput left" id="pf-name" placeholder="Nombre completo" value="${esc(p?.name||'')}"></div>
+        <div class="frow"><span class="flabel">Fecha de nac.</span>
+          <input class="finput" id="pf-dob" type="date" value="${p?.dob||''}"></div>
+        <div class="frow"><span class="flabel">Sexo</span>
+          <select class="finput" id="pf-sex">
+            <option value="">Seleccionar</option>
+            <option value="M" ${p?.sex==='M'?'selected':''}>Masculino</option>
+            <option value="F" ${p?.sex==='F'?'selected':''}>Femenino</option>
+          </select></div>
+      </div>
+    </div>
+    <div class="form-sec">
+      <div class="form-hdr">Antropometría</div>
+      <div class="card">
+        <div class="frow"><span class="flabel">Peso (kg)</span>
+          <input class="finput" id="pf-w" type="number" step=".1" placeholder="0.0" value="${p?.weight||''}" oninput="A.updBMI()"></div>
+        <div class="frow"><span class="flabel">Talla (cm)</span>
+          <input class="finput" id="pf-h" type="number" step="1" placeholder="0" value="${p?.height||''}" oninput="A.updBMI()"></div>
+        <div class="frow"><span class="flabel">IMC</span>
+          <span id="pf-bmi" class="finput" style="cursor:default">${this.bmiHtml(p?.weight,p?.height)}</span></div>
+      </div>
+    </div>
+    <div class="form-sec">
+      <div class="form-hdr">Diagnósticos de Base</div>
+      <div class="card">
+        <div class="tags" id="pf-tags">${this.tagsHtml(this.tDiags,'pf')}</div>
+        <div class="tag-add">
+          <input class="tag-input" id="pf-ti" placeholder="Agregar diagnóstico..."
+            onkeydown="if(event.key==='Enter'){A.addDiag('pf');event.preventDefault()}">
+          <button class="nb-btn" style="font-size:24px;font-weight:300;padding:0 4px" onclick="A.addDiag('pf')">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="form-sec">
+      <div class="form-hdr">Medicamentos de Base</div>
+      <div class="card">
+        <div id="pf-meds">${this.medsHtml(this.tMeds,'pf')}</div>
+        <div class="add-row" onclick="A.showMedSheet('pf')">
+          <span class="add-plus">+</span><span class="add-label">Agregar medicamento</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-sec">
+      <div class="form-hdr">Notas</div>
+      <div class="card">
+        <div class="frow" style="padding:0"><textarea class="finput left" id="pf-notes" placeholder="Notas adicionales...">${esc(p?.notes||'')}</textarea></div>
+      </div>
+    </div>
+    ${p ? `<button class="btn btn-danger" onclick="A.confirmDelPt('${p.id}')">Eliminar Paciente</button>` : ''}
+    <div style="height:24px"></div>`;
+  },
+
+  bmiHtml(w, h) {
+    const b = calcBMI(w,h);
+    if (!b) return '<span style="color:var(--text2)">—</span>';
+    const {txt,cls} = bmiInfo(b);
+    return `<span class="${cls}">${txt}</span>`;
+  },
+
+  updBMI() {
+    const w = parseFloat(document.getElementById('pf-w')?.value);
+    const h = parseFloat(document.getElementById('pf-h')?.value);
+    const el = document.getElementById('pf-bmi');
+    if (el) el.innerHTML = this.bmiHtml(w, h);
+  },
+
+  tagsHtml(arr, pfx) {
+    return arr.map((t,i) => `<div class="tag">${esc(t)}<button class="tag-x" onclick="A.remDiag('${pfx}',${i})">×</button></div>`).join('');
+  },
+
+  medsHtml(arr, pfx) {
+    return arr.map((m,i) => `<div class="med-row">
+      <div class="med-info"><div class="med-name">${esc(m.name)}</div>
+        <div class="med-detail">${esc(m.dose)}${m.dose&&m.frequency?' · ':''}${esc(m.frequency)}</div></div>
+      <button class="med-del" onclick="A.remMed('${pfx}',${i})">−</button>
+    </div>`).join('');
+  },
+
+  addDiag(pfx) {
+    const inp = document.getElementById(`${pfx}-ti`);
+    const v = inp?.value.trim();
+    if (!v) return;
+    this.tDiags.push(v);
+    inp.value = '';
+    document.getElementById(`${pfx}-tags`).innerHTML = this.tagsHtml(this.tDiags, pfx);
+  },
+
+  remDiag(pfx, i) {
+    this.tDiags.splice(i,1);
+    document.getElementById(`${pfx}-tags`).innerHTML = this.tagsHtml(this.tDiags, pfx);
+  },
+
+  remMed(pfx, i) {
+    this.tMeds.splice(i,1);
+    document.getElementById(`${pfx}-meds`).innerHTML = this.medsHtml(this.tMeds, pfx);
+  },
+
+  showMedSheet(pfx) {
+    this.msTarget = pfx;
+    ['ms-name','ms-dose','ms-freq'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('med-sheet').classList.add('show');
+    document.getElementById('sheet-bg').classList.add('show');
+    setTimeout(() => document.getElementById('ms-name').focus(), 350);
+  },
+
+  addMedFromSheet() {
+    const name = document.getElementById('ms-name').value.trim();
+    if (!name) return;
+    this.tMeds.push({ name, dose: document.getElementById('ms-dose').value.trim(), frequency: document.getElementById('ms-freq').value.trim() });
+    this.closeSheet();
+    document.getElementById(`${this.msTarget}-meds`).innerHTML = this.medsHtml(this.tMeds, this.msTarget);
+  },
+
+  savePForm() {
+    const name = document.getElementById('pf-name')?.value.trim();
+    if (!name) { this.showAlert('Nombre requerido','Ingresa el nombre del paciente.'); return; }
+    const d = {
+      id: this.ePt?.id, name,
+      dob:    document.getElementById('pf-dob')?.value || '',
+      sex:    document.getElementById('pf-sex')?.value || '',
+      weight: parseFloat(document.getElementById('pf-w')?.value) || 0,
+      height: parseFloat(document.getElementById('pf-h')?.value) || 0,
+      diagnoses:   [...this.tDiags],
+      medications: JSON.parse(JSON.stringify(this.tMeds)),
+      notes:  document.getElementById('pf-notes')?.value.trim() || '',
+    };
+    this.savePt(d);
+    if (!this.ePt) this.pid = this.patients[0].id;
+    this.back();
+    if (this.ePt) this.renderPDetail();
+  },
+
+  // ── RENDER: PATIENT DETAIL ──
+  renderPDetail() {
+    const p = this.pt(this.pid);
+    if (!p) return this.back();
+    document.getElementById('pdetail-title').textContent = p.name.split(' ')[0];
+    const age = calcAge(p.dob), bmi = calcBMI(p.weight,p.height);
+    const {txt:bmiTxt,cls:bmiCls} = bmiInfo(bmi);
+    const lv = p.visits?.[0];
+
+    let h = `
+    <div class="pt-head">
+      <div class="pt-avatar" style="background:${avatarColor(p.name)}">${esc(initials(p.name))}</div>
+      <div class="pt-name">${esc(p.name)}</div>
+      <div class="pt-meta">${[age!=null?age+' años':null, p.sex==='M'?'Masculino':p.sex==='F'?'Femenino':null, p.dob?fmtDate(p.dob):null].filter(Boolean).join(' · ')}</div>
+    </div>
+    <div class="stats">
+      <div class="stat-card"><div class="stat-lbl">Peso</div><div class="stat-val">${lv?.weight||p.weight||'—'}<span class="stat-unit"> kg</span></div></div>
+      <div class="stat-card"><div class="stat-lbl">Talla</div><div class="stat-val">${p.height||'—'}<span class="stat-unit"> cm</span></div></div>
+      <div class="stat-card"><div class="stat-lbl">IMC</div><div class="stat-val ${bmiCls}">${bmi||'—'}</div></div>
+      <div class="stat-card"><div class="stat-lbl">Consultas</div><div class="stat-val">${p.visits?.length||0}</div></div>
+    </div>`;
+
+    if (p.diagnoses?.length) {
+      h += `<div class="sec-hdr">Diagnósticos de Base</div>
+      <div class="card"><div class="tags" style="padding:12px 16px">${p.diagnoses.map(d=>`<div class="tag">${esc(d)}</div>`).join('')}</div></div>`;
+    }
+
+    if (p.medications?.length) {
+      h += `<div class="sec-hdr">Medicamentos de Base</div><div class="card">
+        ${p.medications.map(m=>`<div class="med-row" style="padding:12px 16px">
+          <div class="med-info"><div class="med-name">${esc(m.name)}</div>
+          <div class="med-detail">${esc(m.dose)}${m.dose&&m.frequency?' · ':''}${esc(m.frequency)}</div></div>
+        </div>`).join('')}
+      </div>`;
+    }
+
+    h += `<div class="sec-hdr">Historial de Consultas</div><div class="card">`;
+    if (!p.visits?.length) {
+      h += `<div style="padding:24px 16px;text-align:center;color:var(--text2)">Sin consultas registradas</div>`;
+    } else {
+      p.visits.forEach(v => {
+        const [yr,mo,dy] = (v.date||today()).split('-');
+        const chips = [
+          v.weight ? `⚖ ${v.weight}kg` : null,
+          v.bpSystolic&&v.bpDiastolic ? `♥ ${v.bpSystolic}/${v.bpDiastolic}` : null,
+          v.temperature ? `🌡 ${v.temperature}°C` : null,
+          v.heartRate ? `💓 ${v.heartRate}` : null,
+        ].filter(Boolean);
+        const main = v.diagnoses?.[0] || 'Consulta';
+        const extra = (v.diagnoses?.length||0) > 1 ? ` <span style="color:var(--text2);font-size:12px">+${v.diagnoses.length-1}</span>` : '';
+        h += `<div class="visit-row arrow" onclick="A.go('vdetail',{vid:'${v.id}'})">
+          <div class="vdate"><div class="vday">${+dy}</div><div class="vmon">${MO[+mo-1]} ${yr.slice(2)}</div></div>
+          <div class="vcontent">
+            <div class="vtitle">${esc(main)}${extra}</div>
+            <div class="vchips">${chips.map(c=>`<span class="chip">${c}</span>`).join('')}</div>
+            ${v.notes ? `<div class="vnotes">${esc(v.notes)}</div>` : ''}
+          </div>
+        </div>`;
+      });
+    }
+    h += `</div>`;
+
+    if (p.notes) {
+      h += `<div class="sec-hdr">Notas</div>
+      <div class="card"><div style="padding:12px 16px;font-size:15px;line-height:1.5">${esc(p.notes)}</div></div>`;
+    }
+
+    h += '<div style="height:80px"></div>';
+    document.getElementById('pdetail-body').innerHTML = h;
+  },
+
+  // ── RENDER: VISIT FORM ──
+  openVisitForm(vt) { this.go('vform', {vt}); },
+
+  renderVForm() {
+    const v = this.eVt, p = this.pt(this.pid);
+    document.getElementById('vform-title').textContent = v ? 'Editar Consulta' : 'Nueva Consulta';
+    this.tMeds  = v ? JSON.parse(JSON.stringify(v.medications||[])) : JSON.parse(JSON.stringify(p?.medications||[]));
+    this.tDiags = v ? [...(v.diagnoses||[])] : [...(p?.diagnoses||[])];
+    this.msTarget = 'vf';
+
+    document.getElementById('vform-body').innerHTML = `
+    <div class="form-sec">
+      <div class="form-hdr">Fecha de Consulta</div>
+      <div class="card">
+        <div class="frow"><span class="flabel">Fecha</span>
+          <input class="finput" id="vf-date" type="date" value="${v?.date||today()}"></div>
+      </div>
+    </div>
+    <div class="form-sec">
+      <div class="form-hdr">Signos Vitales</div>
+      <div class="card">
+        <div class="frow"><span class="flabel">Peso (kg)</span>
+          <input class="finput" id="vf-w" type="number" step=".1" placeholder="0.0" value="${v?.weight||''}"></div>
+        <div class="frow"><span class="flabel">P. Arterial</span>
+          <div style="display:flex;align-items:center;gap:4px">
+            <input class="finput" id="vf-sys" type="number" placeholder="120" style="width:58px;text-align:center" value="${v?.bpSystolic||''}">
+            <span style="color:var(--text2)">/</span>
+            <input class="finput" id="vf-dia" type="number" placeholder="80" style="width:58px;text-align:center" value="${v?.bpDiastolic||''}">
+            <span style="color:var(--text2);font-size:13px">mmHg</span>
+          </div>
+        </div>
+        <div class="frow"><span class="flabel">Temperatura</span>
+          <input class="finput" id="vf-temp" type="number" step=".1" placeholder="36.5" value="${v?.temperature||''}">
+          <span style="color:var(--text2);font-size:13px;margin-left:4px">°C</span></div>
+        <div class="frow"><span class="flabel">F. Cardiaca</span>
+          <input class="finput" id="vf-hr" type="number" placeholder="70" value="${v?.heartRate||''}">
+          <span style="color:var(--text2);font-size:13px;margin-left:4px">lpm</span></div>
+      </div>
+    </div>
+    <div class="form-sec">
+      <div class="form-hdr">Diagnósticos</div>
+      <div class="card">
+        <div class="tags" id="vf-tags">${this.tagsHtml(this.tDiags,'vf')}</div>
+        <div class="tag-add">
+          <input class="tag-input" id="vf-ti" placeholder="Agregar diagnóstico..."
+            onkeydown="if(event.key==='Enter'){A.addDiag('vf');event.preventDefault()}">
+          <button class="nb-btn" style="font-size:24px;font-weight:300;padding:0 4px" onclick="A.addDiag('vf')">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="form-sec">
+      <div class="form-hdr">Medicamentos</div>
+      <div class="card">
+        <div id="vf-meds">${this.medsHtml(this.tMeds,'vf')}</div>
+        <div class="add-row" onclick="A.showMedSheet('vf')">
+          <span class="add-plus">+</span><span class="add-label">Agregar medicamento</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-sec">
+      <div class="form-hdr">Notas de Consulta</div>
+      <div class="card">
+        <div class="frow" style="padding:0"><textarea class="finput left" id="vf-notes" placeholder="Observaciones, indicaciones...">${esc(v?.notes||'')}</textarea></div>
+      </div>
+    </div>
+    ${v ? `<button class="btn btn-danger" onclick="A.confirmDelVt('${this.pid}','${v.id}')">Eliminar Consulta</button>` : ''}
+    <div style="height:24px"></div>`;
+  },
+
+  saveVForm() {
+    const date = document.getElementById('vf-date')?.value;
+    if (!date) { this.showAlert('Fecha requerida','Selecciona la fecha de la consulta.'); return; }
+    const d = {
+      id: this.eVt?.id, date,
+      weight:      parseFloat(document.getElementById('vf-w')?.value)||0,
+      bpSystolic:  parseInt(document.getElementById('vf-sys')?.value)||0,
+      bpDiastolic: parseInt(document.getElementById('vf-dia')?.value)||0,
+      temperature: parseFloat(document.getElementById('vf-temp')?.value)||0,
+      heartRate:   parseInt(document.getElementById('vf-hr')?.value)||0,
+      diagnoses:   [...this.tDiags],
+      medications: JSON.parse(JSON.stringify(this.tMeds)),
+      notes:       document.getElementById('vf-notes')?.value.trim()||'',
+    };
+    this.saveVt(this.pid, d);
+    this.back();
+    this.renderPDetail();
+  },
+
+  // ── RENDER: VISIT DETAIL ──
+  renderVDetail() {
+    const p = this.pt(this.pid);
+    if (!p) return;
+    const v = p.visits.find(v => v.id === this.vid);
+    if (!v) return this.back();
+    document.getElementById('vdetail-title').textContent = fmtDate(v.date);
+
+    let h = '<div style="margin-top:16px">';
+
+    h += `<div class="sec-hdr">Signos Vitales</div><div class="card">`;
+    if (v.weight) h += `<div class="row"><div class="row-main"><span class="row-title">Peso</span></div><span class="row-val">${v.weight} kg</span></div>`;
+    if (v.bpSystolic&&v.bpDiastolic) h += `<div class="row"><div class="row-main"><span class="row-title">Presión Arterial</span></div><span class="row-val">${v.bpSystolic}/${v.bpDiastolic} mmHg</span></div>`;
+    if (v.temperature) h += `<div class="row"><div class="row-main"><span class="row-title">Temperatura</span></div><span class="row-val">${v.temperature} °C</span></div>`;
+    if (v.heartRate)   h += `<div class="row"><div class="row-main"><span class="row-title">Frec. Cardiaca</span></div><span class="row-val">${v.heartRate} lpm</span></div>`;
+    if (!v.weight && !v.bpSystolic && !v.temperature && !v.heartRate)
+      h += `<div style="padding:14px 16px;color:var(--text2);font-size:15px">Sin signos registrados</div>`;
+    h += '</div>';
+
+    if (v.diagnoses?.length) {
+      h += `<div class="sec-hdr">Diagnósticos</div>
+      <div class="card"><div class="tags" style="padding:12px 16px">${v.diagnoses.map(d=>`<div class="tag">${esc(d)}</div>`).join('')}</div></div>`;
+    }
+
+    if (v.medications?.length) {
+      h += `<div class="sec-hdr">Medicamentos</div><div class="card">
+        ${v.medications.map(m=>`<div class="med-row" style="padding:12px 16px">
+          <div class="med-info"><div class="med-name">${esc(m.name)}</div>
+          <div class="med-detail">${esc(m.dose)}${m.dose&&m.frequency?' · ':''}${esc(m.frequency)}</div></div>
+        </div>`).join('')}
+      </div>`;
+    }
+
+    if (v.notes) {
+      h += `<div class="sec-hdr">Notas</div>
+      <div class="card"><div style="padding:12px 16px;font-size:15px;line-height:1.6;white-space:pre-wrap">${esc(v.notes)}</div></div>`;
+    }
+
+    h += `<button class="btn btn-danger mt16" onclick="A.confirmDelVt('${p.id}','${v.id}')">Eliminar Consulta</button>
+    <div style="height:40px"></div></div>`;
+
+    document.getElementById('vdetail-body').innerHTML = h;
+  },
+
+  editVisit() {
+    const p = this.pt(this.pid);
+    const v = p?.visits.find(v => v.id === this.vid);
+    if (v) this.go('vform', {vt: v});
+  },
+
+  // ── MENUS ──
+  globalMenu() {
+    this._sActs = [
+      { label:'Exportar todo a Excel', fn: () => this.exportAll() },
+      { label:'Exportar por período', fn: () => this.periodMenu() },
+      { label:'Eliminar todos los pacientes', dest:true, fn: () => this.confirmDelAll() },
+    ];
+    this.renderSheet(this._sActs);
+  },
+
+  periodMenu() {
+    const now = new Date();
+    const fmt = d => d.toISOString().slice(0,10);
+    const monday = new Date(now); monday.setDate(now.getDate() - ((now.getDay()+6)%7));
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    this._sActs = [
+      { label:'Hoy',              fn: () => this.exportRange(fmt(now), fmt(now)) },
+      { label:'Esta semana',      fn: () => this.exportRange(fmt(monday), fmt(now)) },
+      { label:'Este mes',         fn: () => this.exportRange(fmt(firstDay), fmt(now)) },
+      { label:'Rango personalizado', fn: () => this.showRangeSheet() },
+    ];
+    this.renderSheet(this._sActs);
+  },
+
+  showRangeSheet() {
+    const now = today();
+    document.getElementById('rs-from').value = now;
+    document.getElementById('rs-to').value = now;
+    document.getElementById('range-sheet').classList.add('show');
+    document.getElementById('sheet-bg').classList.add('show');
+  },
+
+  exportRange(from, to) {
+    if (!from || !to) { this.showAlert('Fechas requeridas','Selecciona las fechas de inicio y fin.'); return; }
+    if (!window.XLSX) { this.showAlert('Sin conexión','Necesitas internet la primera vez para exportar.'); return; }
+    if (from > to) { this.showAlert('Rango inválido','La fecha de inicio debe ser antes que la fecha de fin.'); return; }
+
+    // Recopilar todas las consultas del rango de todos los pacientes
+    const rows = [];
+    this.patients.forEach(p => {
+      (p.visits||[]).forEach(v => {
+        if (v.date >= from && v.date <= to) {
+          rows.push([
+            v.date, p.name,
+            calcAge(p.dob)!=null ? calcAge(p.dob) : '',
+            p.sex==='M'?'Masculino':p.sex==='F'?'Femenino':'',
+            v.weight||'', v.bpSystolic||'', v.bpDiastolic||'',
+            v.temperature||'', v.heartRate||'',
+            (v.diagnoses||[]).join(', '),
+            (v.medications||[]).map(m=>`${m.name} ${m.dose} ${m.frequency}`).join('; '),
+            v.notes||'',
+          ]);
+        }
+      });
+    });
+
+    // Ordenar por fecha
+    rows.sort((a,b) => a[0].localeCompare(b[0]));
+
+    if (!rows.length) {
+      this.showAlert('Sin resultados',`No hay consultas registradas entre ${fmtDate(from)} y ${fmtDate(to)}.`);
+      return;
+    }
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+      ['Fecha','Paciente','Edad','Sexo','Peso kg','PA Sys','PA Dia','Temp °C','FC lpm','Diagnósticos','Medicamentos','Notas'],
+      ...rows
+    ]), 'Consultas');
+
+    const fname = from === to
+      ? `consultas_${from}.xlsx`
+      : `consultas_${from}_al_${to}.xlsx`;
+
+    // Cerrar range sheet si estaba abierto
+    document.getElementById('range-sheet').classList.remove('show');
+    document.getElementById('sheet-bg').classList.remove('show');
+
+    this._shareOrDownload(wb, fname);
+  },
+
+  confirmDelAll() {
+    if (!this.patients.length) { this.showAlert('Sin pacientes','No hay pacientes registrados.'); return; }
+    this.showAlert(
+      'Eliminar todos',
+      `¿Eliminar los ${this.patients.length} paciente${this.patients.length!==1?'s':''} y todo su historial? Esta acción no se puede deshacer.`,
+      [
+        {label:'Cancelar', bold:true},
+        {label:'Eliminar todo', dest:true, fn:() => {
+          this.patients = [];
+          this.persist();
+          this.renderList();
+        }}
+      ]
+    );
+  },
+
+  patientMenu() {
+    this._sActs = [
+      { label:'Editar Paciente', fn: () => { const p=this.pt(this.pid); this.go('pform',{pt:p}); } },
+      { label:'Exportar a Excel', fn: () => this.exportPt(this.pid) },
+      { label:'Eliminar Paciente', dest:true, fn: () => this.confirmDelPt(this.pid) },
+    ];
+    this.renderSheet(this._sActs);
+  },
+
+  renderSheet(acts) {
+    document.getElementById('asheet-grp').innerHTML = acts.map((a,i) =>
+      `<button class="asheet-btn ${a.dest?'dest':''}" onclick="A.runSheet(${i})">${esc(a.label)}</button>`
+    ).join('');
+    document.getElementById('asheet').classList.add('show');
+    document.getElementById('sheet-bg').classList.add('show');
+  },
+
+  runSheet(i) {
+    const action = this._sActs[i];
+    this.closeSheet();
+    if (action?.fn) action.fn();
+  },
+
+  closeSheet() {
+    ['asheet','med-sheet','range-sheet'].forEach(id => document.getElementById(id)?.classList.remove('show'));
+    document.getElementById('sheet-bg').classList.remove('show');
+  },
+
+  // ── MODAL ──
+  showAlert(t, m, acts=null) {
+    document.getElementById('modal-t').textContent = t;
+    document.getElementById('modal-m').textContent = m||'';
+    this._mActs = acts || [{label:'OK'}];
+    document.getElementById('modal-acts').innerHTML = this._mActs.map((a,i) =>
+      `<button class="alert-btn ${a.dest?'dest':''} ${a.bold?'bold':''}" onclick="A.runModal(${i})">${esc(a.label)}</button>`
+    ).join('');
+    document.getElementById('modal-bg').classList.add('show');
+  },
+
+  runModal(i) {
+    this.closeModal();
+    this._mActs[i]?.fn?.();
+  },
+
+  closeModal() { document.getElementById('modal-bg').classList.remove('show'); },
+
+  confirmDelPt(id) {
+    const p = this.pt(id);
+    this.showAlert('Eliminar Paciente', `¿Eliminar a "${p?.name}"? No se puede deshacer.`, [
+      {label:'Cancelar', bold:true},
+      {label:'Eliminar', dest:true, fn:() => {
+        this.delPt(id);
+        while (this.stack.length > 1) {
+          const cur = this.stack.pop();
+          const el = document.getElementById(`s-${cur}`);
+          if (el) { el.classList.remove('active','prev'); el.style.transform=''; }
+        }
+        document.getElementById('s-patients')?.classList.remove('prev');
+        this.renderList();
+      }}
+    ]);
+  },
+
+  confirmDelVt(pid, vid) {
+    this.showAlert('Eliminar Consulta', '¿Eliminar esta consulta? No se puede deshacer.', [
+      {label:'Cancelar', bold:true},
+      {label:'Eliminar', dest:true, fn:() => {
+        this.delVt(pid, vid);
+        this.back();
+        this.renderPDetail();
+      }}
+    ]);
+  },
+
+  // ── EXPORT ──
+  _shareOrDownload(wb, filename) {
+    const buf = XLSX.write(wb, { bookType:'xlsx', type:'array' });
+    const blob = new Blob([buf], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const file = new File([blob], filename, { type: blob.type });
+
+    if (navigator.canShare && navigator.canShare({ files:[file] })) {
+      navigator.share({ files:[file], title: filename }).catch(() => this._download(blob, filename));
+    } else {
+      this._download(blob, filename);
+    }
+  },
+
+  _download(blob, filename) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  },
+
+  exportPt(id) {
+    const p = this.pt(id);
+    if (!p || !window.XLSX) { this.showAlert('Sin conexión','Necesitas internet la primera vez para exportar.'); return; }
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+      ['Campo','Valor'],
+      ['Nombre', p.name], ['Fecha nac.', p.dob], ['Edad', calcAge(p.dob)!=null?calcAge(p.dob)+' años':''],
+      ['Sexo', p.sex==='M'?'Masculino':'Femenino'], ['Peso (kg)', p.weight], ['Talla (cm)', p.height],
+      ['IMC', calcBMI(p.weight,p.height)], ['Diagnósticos', (p.diagnoses||[]).join(', ')],
+      ['Medicamentos', (p.medications||[]).map(m=>`${m.name} ${m.dose} ${m.frequency}`).join('; ')],
+      ['Notas', p.notes],
+    ]), 'Paciente');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+      ['Fecha','Peso kg','PA Sys','PA Dia','Temp °C','FC lpm','Diagnósticos','Medicamentos','Notas'],
+      ...(p.visits||[]).map(v => [
+        v.date, v.weight||'', v.bpSystolic||'', v.bpDiastolic||'',
+        v.temperature||'', v.heartRate||'',
+        (v.diagnoses||[]).join(', '),
+        (v.medications||[]).map(m=>`${m.name} ${m.dose} ${m.frequency}`).join('; '),
+        v.notes||'',
+      ])
+    ]), 'Consultas');
+    this._shareOrDownload(wb, `${p.name.replace(/\s+/g,'_')}_bitacora.xlsx`);
+  },
+
+  exportAll() {
+    if (!window.XLSX) { this.showAlert('Sin conexión','Necesitas internet la primera vez para exportar.'); return; }
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+      ['Nombre','Fecha Nac.','Edad','Sexo','Peso','Talla','IMC','Diagnósticos','Consultas'],
+      ...this.patients.map(p => [
+        p.name, p.dob, calcAge(p.dob), p.sex==='M'?'Masculino':'Femenino',
+        p.weight, p.height, calcBMI(p.weight,p.height),
+        (p.diagnoses||[]).join(', '), (p.visits||[]).length,
+      ])
+    ]), 'Pacientes');
+    this.patients.forEach(p => {
+      if (!p.visits?.length) return;
+      const name = p.name.slice(0,28).replace(/[\\\/\?\*\[\]:]/g,'');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+        ['Fecha','Peso','PA Sys','PA Dia','Temp','FC','Diagnósticos','Medicamentos','Notas'],
+        ...p.visits.map(v => [
+          v.date, v.weight||'', v.bpSystolic||'', v.bpDiastolic||'',
+          v.temperature||'', v.heartRate||'',
+          (v.diagnoses||[]).join(', '),
+          (v.medications||[]).map(m=>`${m.name} ${m.dose}`).join('; '),
+          v.notes||'',
+        ])
+      ]), name);
+    });
+    this._shareOrDownload(wb, `bitacora_${today()}.xlsx`);
+  },
+
+  // ── INIT ──
+  init() {
+    this.load();
+    this.renderList();
+    if ('serviceWorker' in navigator)
+      navigator.serviceWorker.register('sw.js').catch(()=>{});
+  }
+};
+
+document.addEventListener('DOMContentLoaded', () => A.init());
+</script>
+</body>
+</html>
