@@ -164,6 +164,11 @@ textarea.finput{text-align:left;padding:12px 0;min-height:88px;resize:none;line-
 .empty-t{font-size:20px;font-weight:600;margin-bottom:6px}
 .empty-s{font-size:15px;color:var(--text2)}
 
+/* CHARTS */
+.chart-wrap{padding:10px 10px 6px}
+.chart-legend{display:flex;gap:14px;padding:0 4px 6px;font-size:11px;color:var(--text2)}
+.chart-legend span{display:flex;align-items:center;gap:4px}
+
 .hidden{display:none!important}
 .mt8{margin-top:8px}
 .mt16{margin-top:16px}
@@ -416,18 +421,32 @@ const A = {
     const cur = this.stack[this.stack.length-1];
     document.getElementById(`s-${cur}`)?.classList.add('prev');
     this.stack.push(screen);
+    // Resetear el screen destino antes de animarlo (fix: pantalla a medias al reusar)
+    const el = document.getElementById(`s-${screen}`);
+    if (el) {
+      el.classList.remove('active', 'prev');
+      el.style.transform = 'translateX(100%)'; // forzar posición inicial
+    }
     if (screen === 'pform')   { this.ePt = params.pt||null; this.renderPForm(); }
     if (screen === 'pdetail') { this.pid = params.pid; this.renderPDetail(); }
     if (screen === 'vform')   { this.eVt = params.vt||null; this.renderVForm(); }
     if (screen === 'vdetail') { this.vid = params.vid; this.renderVDetail(); }
-    setTimeout(() => document.getElementById(`s-${screen}`)?.classList.add('active'), 10);
+    // doble rAF: garantiza que el browser pinte el estado inicial antes de la transición
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (el) el.style.transform = ''; // liberar al CSS
+      document.getElementById(`s-${screen}`)?.classList.add('active');
+    }));
   },
 
   back() {
     if (this.stack.length <= 1) return;
     const cur = this.stack.pop();
     const el = document.getElementById(`s-${cur}`);
-    if (el) { el.classList.remove('active'); setTimeout(() => el.style.transform='', 400); }
+    if (el) {
+      el.classList.remove('active');
+      // Limpiar clases residuales tras la transición de salida
+      setTimeout(() => { el.classList.remove('prev'); el.style.transform = ''; }, 400);
+    }
     const prev = this.stack[this.stack.length-1];
     document.getElementById(`s-${prev}`)?.classList.remove('prev');
     if (prev === 'patients') this.renderList();
@@ -696,6 +715,9 @@ const A = {
       });
     }
     h += `</div>`;
+
+    // Gráficas de tendencia
+    h += this.renderCharts(p);
 
     if (p.notes) {
       h += `<div class="sec-hdr">Notas</div>
@@ -1201,6 +1223,127 @@ ${placemarks.join('\n')}
       ]), name);
     });
     this._shareOrDownload(wb, `bitacora_${today()}.xlsx`);
+  },
+
+  // ── CHARTS ──
+  mkChart(visits, keys, opts = {}) {
+    const ks = Array.isArray(keys) ? keys : [keys];
+    const colors = opts.colors || ['#007AFF'];
+    const unit = opts.unit || '';
+
+    // Filtrar visitas con dato válido y ordenar por fecha
+    const pts = visits
+      .filter(v => ks.some(k => +v[k] > 0))
+      .sort((a, b) => a.date.localeCompare(b.date));
+    if (pts.length < 2) return '';
+
+    const W = 300, H = 106, pL = 32, pR = 10, pT = 10, pB = 22;
+    const plotW = W - pL - pR, plotH = H - pT - pB;
+
+    const allVals = ks.flatMap(k => pts.map(v => +v[k] || 0).filter(x => x > 0));
+    let minY = Math.min(...allVals), maxY = Math.max(...allVals);
+    const span = maxY - minY;
+    if (span === 0) { minY -= 2; maxY += 2; }
+    else { minY = Math.max(0, minY - span * 0.15); maxY = maxY + span * 0.15; }
+
+    const ts = pts.map(v => new Date(v.date + 'T12:00:00').getTime());
+    const minT = Math.min(...ts), maxT = Math.max(...ts);
+
+    const cx = t  => pL + (maxT === minT ? plotW / 2 : (t - minT) / (maxT - minT) * plotW);
+    const cy = v  => pT + plotH - (v - minY) / (maxY - minY) * plotH;
+    const fd = s  => { const [,m,d] = s.split('-'); return `${+d}/${+m}`; };
+
+    // Gradients
+    let defs = '<defs>';
+    ks.forEach((k, i) => {
+      defs += `<linearGradient id="cg_${k}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${colors[i]}" stop-opacity=".22"/>
+        <stop offset="100%" stop-color="${colors[i]}" stop-opacity="0"/>
+      </linearGradient>`;
+    });
+    defs += '</defs>';
+
+    // Grid horizontal (3 líneas)
+    let grid = '';
+    [minY, (minY + maxY) / 2, maxY].forEach(v => {
+      const y = cy(v);
+      grid += `<line x1="${pL}" y1="${y}" x2="${W - pR}" y2="${y}" stroke="rgba(60,60,67,.1)" stroke-width=".5"/>`;
+      grid += `<text x="${pL - 3}" y="${y + 3.5}" text-anchor="end" font-size="8" fill="#8E8E93">${Math.round(v)}</text>`;
+    });
+
+    // Líneas y puntos por cada key
+    let lines = '';
+    ks.forEach((k, i) => {
+      const vp = pts.filter(v => +v[k] > 0);
+      if (vp.length < 2) return;
+      const coords = vp.map(v => ({ x: cx(new Date(v.date + 'T12:00:00').getTime()), y: cy(+v[k]) }));
+      const poly = coords.map(c => `${c.x},${c.y}`).join(' ');
+      const area = `M${coords[0].x},${pT + plotH} ${coords.map(c => `L${c.x},${c.y}`).join(' ')} L${coords[coords.length-1].x},${pT + plotH}Z`;
+      lines += `<path d="${area}" fill="url(#cg_${k})"/>`;
+      lines += `<polyline points="${poly}" fill="none" stroke="${colors[i]}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+      coords.forEach(c => {
+        lines += `<circle cx="${c.x}" cy="${c.y}" r="3" fill="${colors[i]}" stroke="#fff" stroke-width="1.5"/>`;
+      });
+      // Etiqueta del último valor
+      const last = coords[coords.length - 1];
+      const lastV = vp[vp.length - 1][k];
+      const lx = Math.min(last.x + 5, W - pR - 22);
+      lines += `<text x="${lx}" y="${last.y + 4}" font-size="9" fill="${colors[i]}" font-weight="600">${lastV}${unit}</text>`;
+    });
+
+    // Etiquetas X (primera y última fecha)
+    const xL = `<text x="${pL}" y="${H - 5}" font-size="8" fill="#8E8E93">${fd(pts[0].date)}</text>`
+             + `<text x="${W - pR}" y="${H - 5}" text-anchor="end" font-size="8" fill="#8E8E93">${fd(pts[pts.length-1].date)}</text>`;
+
+    return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;display:block">${defs}${grid}${lines}${xL}</svg>`;
+  },
+
+  renderCharts(p) {
+    if (!p.visits || p.visits.length < 2) return '';
+    const sv = [...p.visits].sort((a, b) => a.date.localeCompare(b.date));
+    let h = '';
+
+    // Peso
+    const wPts = sv.filter(v => +v.weight > 0);
+    if (wPts.length >= 2) {
+      h += `<div class="sec-hdr">Tendencia — Peso</div>
+      <div class="card"><div class="chart-wrap">
+        ${this.mkChart(wPts, 'weight', { colors: ['#007AFF'], unit: 'kg' })}
+      </div></div>`;
+    }
+
+    // Presión arterial
+    const bpPts = sv.filter(v => +v.bpSystolic > 0 && +v.bpDiastolic > 0);
+    if (bpPts.length >= 2) {
+      h += `<div class="sec-hdr">Tendencia — Presión Arterial</div>
+      <div class="card"><div class="chart-wrap">
+        ${this.mkChart(bpPts, ['bpSystolic','bpDiastolic'], { colors: ['#FF3B30','#FF9500'] })}
+        <div class="chart-legend">
+          <span><svg width="10" height="10"><circle cx="5" cy="5" r="4" fill="#FF3B30"/></svg>Sistólica</span>
+          <span><svg width="10" height="10"><circle cx="5" cy="5" r="4" fill="#FF9500"/></svg>Diastólica</span>
+        </div>
+      </div></div>`;
+    }
+
+    // Frecuencia cardiaca
+    const hrPts = sv.filter(v => +v.heartRate > 0);
+    if (hrPts.length >= 2) {
+      h += `<div class="sec-hdr">Tendencia — Frec. Cardiaca</div>
+      <div class="card"><div class="chart-wrap">
+        ${this.mkChart(hrPts, 'heartRate', { colors: ['#FF2D55'], unit: 'lpm' })}
+      </div></div>`;
+    }
+
+    // Temperatura
+    const tPts = sv.filter(v => +v.temperature > 0);
+    if (tPts.length >= 2) {
+      h += `<div class="sec-hdr">Tendencia — Temperatura</div>
+      <div class="card"><div class="chart-wrap">
+        ${this.mkChart(tPts, 'temperature', { colors: ['#FF9500'], unit: '°C' })}
+      </div></div>`;
+    }
+
+    return h;
   },
 
   // ── INIT ──
