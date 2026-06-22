@@ -33,7 +33,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
 #app{position:fixed;inset:0;overflow:hidden}
 .screen{position:absolute;inset:0;background:var(--bg);transform:translateX(100%);transition:transform .35s cubic-bezier(.25,.46,.45,.94);overflow:hidden;display:flex;flex-direction:column;will-change:transform}
 .screen.active{transform:translateX(0)}
-.screen.prev{transform:translateX(-28%)}
+.screen.prev{transform:translateX(-100%)}
 .sbody{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:calc(var(--nav) + var(--st));padding-bottom:calc(var(--sb) + 24px)}
 
 /* SEARCH */
@@ -431,11 +431,13 @@ const A = {
     if (screen === 'pdetail') { this.pid = params.pid; this.renderPDetail(); }
     if (screen === 'vform')   { this.eVt = params.vt||null; this.renderVForm(); }
     if (screen === 'vdetail') { this.vid = params.vid; this.renderVDetail(); }
-    // doble rAF: garantiza que el browser pinte el estado inicial antes de la transición
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      if (el) el.style.transform = ''; // liberar al CSS
-      document.getElementById(`s-${screen}`)?.classList.add('active');
-    }));
+    // doble rAF SEPARADO: 1er frame pinta el estado inicial, 2do frame dispara la transición
+    requestAnimationFrame(() => {
+      if (el) el.style.transform = ''; // Frame 1: quita inline → CSS da translateX(100%)
+      requestAnimationFrame(() => {
+        document.getElementById(`s-${screen}`)?.classList.add('active'); // Frame 2: transición 100%→0%
+      });
+    });
   },
 
   back() {
