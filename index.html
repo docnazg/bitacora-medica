@@ -514,56 +514,118 @@ const A = {
   },
 
   // ── RENDER: LIST ──
+  _searchMode: 'name', // 'name' | 'dxmed'
+
   renderList() {
     const body=document.getElementById('list-body');
     const q=body.querySelector('.searchbar input')?.value||'';
-    const all=q?this.patients.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())):this.patients;
-    let h=`<div style="padding:0 0 4px"><div class="searchbar">
-      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#8E8E93" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="5.5"/><path d="M11.5 11.5l3 3"/></svg>
-      <input placeholder="Buscar pacientes" oninput="A.filterList(this.value)" value="${esc(q)}">
-    </div></div>`;
+    this._searchMode=body.querySelector('.seg-btn.active')?.dataset.mode||'name';
+    const mode=this._searchMode;
+
+    let h=`<div style="padding:0 0 4px">
+      <div class="searchbar">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#8E8E93" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="5.5"/><path d="M11.5 11.5l3 3"/></svg>
+        <input placeholder="${mode==='dxmed'?'Buscar diagnóstico o medicamento...':'Buscar pacientes'}" oninput="A.filterList(this.value)" value="${esc(q)}">
+      </div>
+      <div class="seg-ctrl">
+        <button class="seg-btn ${mode==='name'?'active':''}" data-mode="name" onclick="A.setSearchMode('name')">Por nombre</button>
+        <button class="seg-btn ${mode==='dxmed'?'active':''}" data-mode="dxmed" onclick="A.setSearchMode('dxmed')">Dx / Medicamento</button>
+      </div>
+    </div>`;
+
     if (!this.patients.length) {
       h+=`<div class="empty"><div class="empty-ico">👨‍⚕️</div><div class="empty-t">Sin pacientes</div><div class="empty-s">Toca + para agregar tu primer paciente</div></div>`;
-    } else if (!all.length) {
-      h+=`<div class="empty"><div class="empty-ico">🔍</div><div class="empty-t">Sin resultados</div></div>`;
-    } else {
-      h+=`<div class="sec-hdr">${all.length} PACIENTE${all.length!==1?'S':''}</div><div class="card">`;
-      all.forEach(p=>{
+      document.getElementById('list-body').innerHTML=h; return;
+    }
+
+    body.innerHTML=h+this._buildResultsHtml(q, mode);
+  },
+
+  setSearchMode(mode) {
+    this._searchMode=mode;
+    const q=document.querySelector('#list-body .searchbar input')?.value||'';
+    // update buttons
+    document.querySelectorAll('#list-body .seg-btn').forEach(b=>{
+      b.classList.toggle('active', b.dataset.mode===mode);
+    });
+    document.querySelector('#list-body .searchbar input').placeholder=
+      mode==='dxmed'?'Buscar diagnóstico o medicamento...':'Buscar pacientes';
+    // re-render results area
+    const resultsEl=document.getElementById('list-results');
+    if (resultsEl) resultsEl.innerHTML=this._buildResultsHtml(q, mode);
+    else this.renderList();
+  },
+
+  filterList(q) {
+    const mode=this._searchMode||'name';
+    const resultsEl=document.getElementById('list-results');
+    if (resultsEl) resultsEl.innerHTML=this._buildResultsHtml(q, mode);
+    else this.renderList();
+  },
+
+  _buildResultsHtml(q, mode) {
+    const ql=q.toLowerCase();
+
+    if (mode==='dxmed') {
+      if (!q) return `<div id="list-results"><div class="empty" style="padding:40px 32px"><div class="empty-ico">🔍</div><div class="empty-t">Escribe para buscar</div><div class="empty-s">Diagnósticos, enfermedades o medicamentos</div></div></div>`;
+
+      // Search across all patients diagnoses and medications
+      const results=[];
+      this.patients.forEach(p=>{
+        const matchDx=(p.diagnoses||[]).filter(d=>d.toLowerCase().includes(ql));
+        const matchMedBase=(p.medications||[]).filter(m=>m.name.toLowerCase().includes(ql));
+        // also search visit-level diagnoses and meds
+        const visitDx=new Set(), visitMed=new Set();
+        (p.visits||[]).forEach(v=>{
+          (v.diagnoses||[]).filter(d=>d.toLowerCase().includes(ql)).forEach(d=>visitDx.add(d));
+          (v.medications||[]).filter(m=>m.name.toLowerCase().includes(ql)).forEach(m=>visitMed.add(m.name));
+        });
+        const allDx=[...new Set([...matchDx,...visitDx])];
+        const allMed=[...new Set([...matchMedBase.map(m=>m.name),...visitMed])];
+        if (allDx.length||allMed.length) results.push({p, allDx, allMed});
+      });
+
+      if (!results.length) return `<div id="list-results"><div class="empty"><div class="empty-ico">🔍</div><div class="empty-t">Sin resultados</div><div class="empty-s">Ningún paciente tiene "${esc(q)}" en su expediente</div></div></div>`;
+
+      let h=`<div id="list-results"><div class="sec-hdr">${results.length} PACIENTE${results.length!==1?'S':''} CON "${q.toUpperCase()}"</div><div class="card">`;
+      results.forEach(({p,allDx,allMed})=>{
         const age=calcAge(p.dob);
-        const last=p.visits?.length?`Últ: ${fmtDate(p.visits[0].date)}`:'Sin consultas';
-        const addrParts=[p.colonia,p.municipio].filter(Boolean);
-        const addrSub=addrParts.length?` · ${addrParts.join(', ')}` : '';
+        const sub=[];
+        if (allDx.length) sub.push(`Dx: ${allDx.slice(0,2).join(', ')}${allDx.length>2?' +'+( allDx.length-2):''}`);
+        if (allMed.length) sub.push(`💊 ${allMed.slice(0,2).join(', ')}${allMed.length>2?' +'+(allMed.length-2):''}`);
         h+=`<div class="row arrow" onclick="A.go('pdetail',{pid:'${p.id}'})">
           <div class="row-icon" style="background:${avatarColor(p.name)}">${esc(initials(p.name))}</div>
           <div class="row-main">
             <div class="row-title">${esc(p.name)}</div>
-            <div class="row-sub">${age!=null?age+' años · ':''}${p.sex==='M'?'Masc':p.sex==='F'?'Fem':''} · ${last}${addrSub}</div>
+            <div class="row-sub">${age!=null?age+' años · ':''}${sub.join(' · ')}</div>
           </div>
           ${p.visits?.length?`<span class="badge">${p.visits.length}</span>`:''}
         </div>`;
       });
-      h+='</div>';
+      h+=`</div></div>`;
+      return h;
     }
-    body.innerHTML=h;
-  },
 
-  filterList(q) {
-    const all=q?this.patients.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())):this.patients;
-    const card=document.querySelector('#list-body .card');
-    const hdr=document.querySelector('#list-body .sec-hdr');
-    if (!card) return this.renderList();
-    if (hdr) hdr.textContent=`${all.length} PACIENTE${all.length!==1?'S':''}`;
-    if (!all.length) { card.innerHTML='<div class="empty"><div class="empty-ico">🔍</div><div class="empty-t">Sin resultados</div></div>'; return; }
-    card.innerHTML=all.map(p=>{
+    // Default: search by name
+    const all=ql?this.patients.filter(p=>p.name.toLowerCase().includes(ql)):this.patients;
+    if (!all.length) return `<div id="list-results"><div class="empty"><div class="empty-ico">🔍</div><div class="empty-t">Sin resultados</div></div></div>`;
+    let h=`<div id="list-results"><div class="sec-hdr">${all.length} PACIENTE${all.length!==1?'S':''}</div><div class="card">`;
+    all.forEach(p=>{
       const age=calcAge(p.dob);
       const last=p.visits?.length?`Últ: ${fmtDate(p.visits[0].date)}`:'Sin consultas';
-      return `<div class="row arrow" onclick="A.go('pdetail',{pid:'${p.id}'})">
+      const addrParts=[p.colonia,p.municipio].filter(Boolean);
+      const addrSub=addrParts.length?` · ${addrParts.join(', ')}` : '';
+      h+=`<div class="row arrow" onclick="A.go('pdetail',{pid:'${p.id}'})">
         <div class="row-icon" style="background:${avatarColor(p.name)}">${esc(initials(p.name))}</div>
-        <div class="row-main"><div class="row-title">${esc(p.name)}</div>
-        <div class="row-sub">${age!=null?age+' años · ':''}${p.sex==='M'?'Masc':p.sex==='F'?'Fem':''} · ${last}</div></div>
+        <div class="row-main">
+          <div class="row-title">${esc(p.name)}</div>
+          <div class="row-sub">${age!=null?age+' años · ':''}${p.sex==='M'?'Masc':p.sex==='F'?'Fem':''} · ${last}${addrSub}</div>
+        </div>
         ${p.visits?.length?`<span class="badge">${p.visits.length}</span>`:''}
       </div>`;
-    }).join('');
+    });
+    h+=`</div></div>`;
+    return h;
   },
 
   // ── RENDER: PATIENT FORM ──
@@ -927,8 +989,9 @@ const A = {
     <div class="form-sec">
       <div class="form-hdr">Química Sanguínea</div>
       <div class="card">
-        <div class="frow"><span class="flabel">Últ. alimento</span>
-          <input class="finput" id="vf-ultalim" type="time" value="${v?.ultimaComida||''}">
+        <div class="frow"><span class="flabel">Horas de ayuno</span>
+          <input class="finput" id="vf-horasayuno" type="number" step="0.5" min="0" max="24" placeholder="ej. 8" value="${v?.horasAyuno??''}">
+          <span style="color:var(--text2);font-size:13px;margin-left:4px">hrs</span>
         </div>
         <div class="frow"><span class="flabel">Glucosa ayuno</span>
           <input class="finput" id="vf-glu" type="number" step="1" placeholder="—" value="${v?.glucosaAyuno||''}">
@@ -984,7 +1047,7 @@ const A = {
       bpDiastolic: parseInt(document.getElementById('vf-dia')?.value)||0,
       temperature: parseFloat(document.getElementById('vf-temp')?.value)||0,
       heartRate:   parseInt(document.getElementById('vf-hr')?.value)||0,
-      ultimaComida: document.getElementById('vf-ultalim')?.value||'',
+      horasAyuno:   parseFloat(document.getElementById('vf-horasayuno')?.value)||0,
       glucosaAyuno: parseInt(document.getElementById('vf-glu')?.value)||0,
       glucosaPost:  parseInt(document.getElementById('vf-glup')?.value)||0,
       trigliceridos:parseInt(document.getElementById('vf-trig')?.value)||0,
@@ -1021,7 +1084,9 @@ const A = {
     // Química sanguínea
     const hasChemistry=v.glucosaAyuno||v.glucosaPost||v.trigliceridos||v.colesterol;
     if (hasChemistry) {
-      const ctx=v.ultimaComida?` <span style="color:var(--text2);font-size:13px">(${mealContext(v.ultimaComida)})</span>`:'';
+      const hrs=+v.horasAyuno||0;
+      const ctxTxt=hrs>=8?`Ayuno (${hrs}h)`:hrs>0?`Postprandial (${hrs}h desde última comida)`:'';
+      const ctx=ctxTxt?` <span style="color:var(--text2);font-size:13px">(${ctxTxt})</span>`:'';
       h+=`<div class="sec-hdr">Química Sanguínea${ctx}</div>`;
       h+=`<div class="chem-grid">`;
       if (v.glucosaAyuno) h+=`<div class="chem-card"><div class="chem-lbl">Glucosa Ayuno</div><div class="chem-val ${chemClass('glucosaAyuno',v.glucosaAyuno)}">${v.glucosaAyuno}<span class="chem-unit"> mg/dL</span></div><div class="chem-ref ${chemClass('glucosaAyuno',v.glucosaAyuno)}">${chemRef('glucosaAyuno')}</div></div>`;
@@ -1444,7 +1509,7 @@ const A = {
             p.estado||'', p.municipio||'', p.colonia||'',
             v.weight||'', v.bpSystolic||'', v.bpDiastolic||'',
             v.temperature||'', v.heartRate||'',
-            v.ultimaComida||'', v.glucosaAyuno||'', v.glucosaPost||'',
+            v.horasAyuno||'', v.glucosaAyuno||'', v.glucosaPost||'',
             v.trigliceridos||'', v.colesterol||'',
             (v.diagnoses||[]).join(', '),
             (v.medications||[]).map(m=>`${m.name} ${m.dose} ${m.frequency}`).join('; '),
@@ -1459,7 +1524,7 @@ const A = {
     XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
       ['Fecha','Paciente','Edad','Sexo','Estado','Municipio','Colonia',
        'Peso kg','PA Sys','PA Dia','Temp °C','FC lpm',
-       'Últ. Alimento','Glucosa Ayuno','Glucosa Post','Triglicéridos','Colesterol',
+       'Horas Ayuno','Glucosa Ayuno','Glucosa Post','Triglicéridos','Colesterol',
        'Diagnósticos','Medicamentos','Notas'],
       ...rows
     ]),'Consultas');
@@ -1578,12 +1643,12 @@ const A = {
     ]),'Paciente');
     XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
       ['Fecha','Peso kg','PA Sys','PA Dia','Temp °C','FC lpm',
-       'Últ. Alimento','Glucosa Ayuno','Glucosa Post','Triglicéridos','Colesterol',
+       'Horas Ayuno','Glucosa Ayuno','Glucosa Post','Triglicéridos','Colesterol',
        'Diagnósticos','Medicamentos','Notas'],
       ...(p.visits||[]).map(v=>[
         v.date, v.weight||'', v.bpSystolic||'', v.bpDiastolic||'',
         v.temperature||'', v.heartRate||'',
-        v.ultimaComida||'', v.glucosaAyuno||'', v.glucosaPost||'',
+        v.horasAyuno||'', v.glucosaAyuno||'', v.glucosaPost||'',
         v.trigliceridos||'', v.colesterol||'',
         (v.diagnoses||[]).join(', '),
         (v.medications||[]).map(m=>`${m.name} ${m.dose} ${m.frequency}`).join('; '),
@@ -1610,12 +1675,12 @@ const A = {
       const name=p.name.slice(0,28).replace(/[\\\/\?\*\[\]:]/g,'');
       XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
         ['Fecha','Peso','PA Sys','PA Dia','Temp','FC',
-         'Últ. Alimento','Glu. Ayuno','Glu. Post','Triglicéridos','Colesterol',
+         'Horas Ayuno','Glu. Ayuno','Glu. Post','Triglicéridos','Colesterol',
          'Diagnósticos','Medicamentos','Notas'],
         ...p.visits.map(v=>[
           v.date, v.weight||'', v.bpSystolic||'', v.bpDiastolic||'',
           v.temperature||'', v.heartRate||'',
-          v.ultimaComida||'', v.glucosaAyuno||'', v.glucosaPost||'',
+          v.horasAyuno||'', v.glucosaAyuno||'', v.glucosaPost||'',
           v.trigliceridos||'', v.colesterol||'',
           (v.diagnoses||[]).join(', '),
           (v.medications||[]).map(m=>`${m.name} ${m.dose}`).join('; '),
