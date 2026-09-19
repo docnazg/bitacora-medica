@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root{
-  --blue:#007AFF;--red:#FF3B30;--green:#34C759;--orange:#FF9500;
+  --blue:#007AFF;--red:#FF3B30;--green:#34C759;--orange:#FF9500;--purple:#AF52DE;
   --gray:#8E8E93;--bg:#F2F2F7;--card:#FFFFFF;--text:#1C1C1E;
   --text2:#8E8E93;--sep:rgba(60,60,67,.29);
   --nav:44px;--st:env(safe-area-inset-top,20px);--sb:env(safe-area-inset-bottom,0px);
@@ -22,26 +22,22 @@
 html,body{height:100%;overflow:hidden}
 body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;background:var(--bg);color:var(--text);user-select:none;-webkit-user-select:none}
 
-/* NAV BAR */
 .navbar{position:fixed;top:0;left:0;right:0;height:calc(var(--nav) + var(--st));padding-top:var(--st);background:rgba(242,242,247,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:.5px solid var(--sep);z-index:100;display:flex;align-items:flex-end;padding-bottom:0}
 .nbc{display:flex;align-items:center;width:100%;min-height:44px;padding:0 4px}
 .nb-title{flex:1;text-align:center;font-size:17px;font-weight:600}
 .nb-btn{min-width:44px;min-height:44px;display:flex;align-items:center;gap:3px;color:var(--blue);background:none;border:none;font-size:17px;padding:0 8px;cursor:pointer;touch-action:manipulation;font-family:inherit}
 .nb-btn svg{flex-shrink:0}
 
-/* SCREENS */
 #app{position:fixed;inset:0;overflow:hidden}
 .screen{position:absolute;inset:0;background:var(--bg);transform:translateX(100%);transition:transform .35s cubic-bezier(.25,.46,.45,.94);overflow:hidden;display:flex;flex-direction:column;will-change:transform}
 .screen.active{transform:translateX(0)}
 .screen.prev{transform:translateX(-100%)}
 .sbody{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:calc(var(--nav) + var(--st));padding-bottom:calc(var(--sb) + 24px)}
 
-/* SEARCH */
 .searchbar{display:flex;align-items:center;background:rgba(118,118,128,.12);border-radius:10px;padding:7px 10px;gap:6px;margin:8px 16px}
 .searchbar input{flex:1;background:none;border:none;outline:none;font-size:17px;color:var(--text);font-family:inherit}
 .searchbar input::placeholder{color:var(--text2)}
 
-/* LISTS */
 .sec-hdr{font-size:13px;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;padding:0 16px 6px;margin-top:24px}
 .card{background:var(--card);border-radius:12px;margin:0 16px;overflow:hidden}
 .row{display:flex;align-items:center;padding:12px 16px;min-height:44px;position:relative;cursor:pointer;touch-action:manipulation}
@@ -55,26 +51,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;ba
 .arrow::after{content:'›';color:var(--text2);font-size:22px;margin-left:6px;flex-shrink:0}
 .badge{background:var(--blue);color:#fff;font-size:12px;font-weight:600;border-radius:10px;padding:2px 7px;margin-left:8px;flex-shrink:0}
 
-/* FORMS */
 .form-sec{margin-top:24px}
 .form-hdr{font-size:13px;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;padding:0 16px 6px}
 .frow{display:flex;align-items:center;padding:0 16px;min-height:44px;position:relative}
 .frow:not(:last-child)::after{content:'';position:absolute;bottom:0;left:16px;right:0;height:.5px;background:var(--sep)}
-.flabel{font-size:17px;color:var(--text);min-width:110px;flex-shrink:0}
+.flabel{font-size:17px;color:var(--text);min-width:120px;flex-shrink:0}
+.flabel-sm{font-size:17px;color:var(--text);min-width:90px;flex-shrink:0}
 .finput{flex:1;background:none;border:none;outline:none;font-size:17px;color:var(--text);text-align:right;padding:12px 0;font-family:inherit}
 .finput::placeholder{color:var(--text2)}
 .finput.left{text-align:left}
 select.finput{-webkit-appearance:none;cursor:pointer}
 textarea.finput{text-align:left;padding:12px 0;min-height:88px;resize:none;line-height:1.4}
 
-/* TAGS */
 .tags{display:flex;flex-wrap:wrap;gap:8px;padding:10px 16px 12px}
 .tag{background:rgba(0,122,255,.12);color:var(--blue);border-radius:14px;padding:4px 10px;font-size:14px;display:flex;align-items:center;gap:5px}
 .tag-x{background:none;border:none;color:var(--blue);font-size:18px;line-height:1;cursor:pointer;padding:0;touch-action:manipulation}
 .tag-add{display:flex;align-items:center;padding:6px 16px 10px;gap:8px}
 .tag-input{flex:1;background:rgba(118,118,128,.12);border:none;outline:none;border-radius:8px;padding:7px 10px;font-size:15px;color:var(--text);font-family:inherit}
 
-/* MEDS */
 .med-row{display:flex;align-items:center;padding:10px 16px;position:relative}
 .med-row:not(:last-child)::after{content:'';position:absolute;bottom:0;left:16px;right:0;height:.5px;background:var(--sep)}
 .med-info{flex:1}
@@ -86,28 +80,52 @@ textarea.finput{text-align:left;padding:12px 0;min-height:88px;resize:none;line-
 .add-plus{color:var(--blue);font-size:26px;font-weight:300;margin-right:10px;line-height:1}
 .add-label{color:var(--blue);font-size:17px}
 
-/* BUTTONS */
 .btn{display:block;width:calc(100% - 32px);margin:0 16px;padding:14px;border-radius:12px;border:none;font-size:17px;font-weight:600;cursor:pointer;text-align:center;touch-action:manipulation;font-family:inherit}
 .btn:active{opacity:.75}
 .btn-primary{background:var(--blue);color:#fff}
 .btn-danger{background:rgba(255,59,48,.1);color:var(--red);margin-top:12px}
 .btn-secondary{background:rgba(0,122,255,.1);color:var(--blue)}
 
-/* FAB */
 .fab{position:fixed;right:20px;bottom:calc(20px + var(--sb));width:56px;height:56px;border-radius:28px;background:var(--blue);color:#fff;font-size:30px;border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,122,255,.45);cursor:pointer;z-index:50;touch-action:manipulation;font-weight:300}
 
-/* STATS */
+/* STATS GRID */
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px;margin-top:16px}
 .stat-card{background:var(--card);border-radius:12px;padding:12px}
 .stat-lbl{font-size:12px;color:var(--text2);margin-bottom:3px}
 .stat-val{font-size:22px;font-weight:700}
 .stat-unit{font-size:13px;font-weight:400;color:var(--text2)}
+.stat-sub{font-size:11px;color:var(--text2);margin-top:2px}
+
+/* STATS MODULE */
+.stats4{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px;margin-top:16px}
+.stat4-card{background:var(--card);border-radius:12px;padding:14px}
+.stat4-ico{font-size:22px;margin-bottom:6px}
+.stat4-val{font-size:26px;font-weight:700;line-height:1}
+.stat4-lbl{font-size:12px;color:var(--text2);margin-top:3px}
+.diag-row{display:flex;align-items:center;padding:10px 16px;gap:10px;position:relative}
+.diag-row:not(:last-child)::after{content:'';position:absolute;bottom:0;left:16px;right:0;height:.5px;background:var(--sep)}
+.diag-bar-bg{flex:1;height:6px;background:rgba(118,118,128,.15);border-radius:3px;overflow:hidden}
+.diag-bar-fill{height:100%;border-radius:3px;background:var(--blue);transition:width .4s ease}
+.diag-name{font-size:14px;min-width:0;flex:2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.diag-count{font-size:13px;font-weight:600;color:var(--blue);flex-shrink:0;min-width:28px;text-align:right}
+.loc-row{display:flex;align-items:center;padding:10px 16px;gap:10px;position:relative}
+.loc-row:not(:last-child)::after{content:'';position:absolute;bottom:0;left:16px;right:0;height:.5px;background:var(--sep)}
+.loc-name{flex:1;font-size:15px}
+.loc-count{font-size:13px;font-weight:600;color:var(--blue);background:rgba(0,122,255,.1);border-radius:10px;padding:2px 8px}
+.chem-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px;margin-top:16px}
+.chem-card{background:var(--card);border-radius:10px;padding:10px 12px}
+.chem-lbl{font-size:11px;color:var(--text2);margin-bottom:2px}
+.chem-val{font-size:18px;font-weight:700}
+.chem-unit{font-size:11px;color:var(--text2)}
+.chem-ref{font-size:10px;margin-top:1px}
+.chem-ok{color:var(--green)}.chem-warn{color:var(--orange)}.chem-hi{color:var(--red)}
 
 /* PATIENT HEADER */
 .pt-head{background:var(--card);border-radius:14px;margin:16px 16px 0;padding:16px}
 .pt-avatar{width:58px;height:58px;border-radius:29px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;margin-bottom:10px}
 .pt-name{font-size:22px;font-weight:700}
 .pt-meta{font-size:15px;color:var(--text2);margin-top:3px}
+.pt-addr{font-size:13px;color:var(--text2);margin-top:4px;display:flex;align-items:center;gap:4px}
 
 /* VISIT ITEMS */
 .visit-row{display:flex;padding:12px 16px;gap:12px;position:relative;cursor:pointer;touch-action:manipulation}
@@ -120,12 +138,13 @@ textarea.finput{text-align:left;padding:12px 0;min-height:88px;resize:none;line-
 .vtitle{font-size:15px;font-weight:500}
 .vchips{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
 .chip{background:rgba(118,118,128,.12);border-radius:6px;padding:2px 7px;font-size:12px}
+.chip-green{background:rgba(52,199,89,.15);color:var(--green)}
+.chip-red{background:rgba(255,59,48,.12);color:var(--red)}
+.chip-orange{background:rgba(255,149,0,.12);color:var(--orange)}
 .vnotes{font-size:13px;color:var(--text2);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* BMI colors */
 .bmi-n{color:var(--green)}.bmi-s{color:var(--orange)}.bmi-o{color:var(--red)}.bmi-u{color:var(--blue)}
 
-/* MODAL */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
 .modal-bg.show{opacity:1;pointer-events:all}
 .alert{background:rgba(242,242,247,.98);backdrop-filter:blur(40px);border-radius:14px;width:100%;max-width:310px;overflow:hidden;transform:scale(.9);transition:transform .2s}
@@ -138,7 +157,6 @@ textarea.finput{text-align:left;padding:12px 0;min-height:88px;resize:none;line-
 .alert-btn:not(:last-child){border-right:.5px solid var(--sep)}
 .alert-btn.dest{color:var(--red)}.alert-btn.bold{font-weight:600}
 
-/* ACTION SHEET */
 .sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}
 .sheet-bg.show{opacity:1;pointer-events:all}
 .asheet{position:fixed;bottom:0;left:0;right:0;padding:8px 8px calc(8px + var(--sb));z-index:201;transform:translateY(100%);transition:transform .3s cubic-bezier(.25,.46,.45,.94)}
@@ -148,7 +166,6 @@ textarea.finput{text-align:left;padding:12px 0;min-height:88px;resize:none;line-
 .asheet-btn:not(:last-child)::after{content:'';position:absolute;bottom:0;left:0;right:0;height:.5px;background:var(--sep)}
 .asheet-btn.dest{color:var(--red)}.asheet-btn.cancel{font-weight:600}
 
-/* MED BOTTOM SHEET */
 .bsheet{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-radius:16px 16px 0 0;padding:20px 16px calc(20px + var(--sb));z-index:202;transform:translateY(100%);transition:transform .3s cubic-bezier(.25,.46,.45,.94);box-shadow:0 -2px 20px rgba(0,0,0,.12)}
 .bsheet.show{transform:translateY(0)}
 .bsheet-title{font-size:17px;font-weight:600;text-align:center;margin-bottom:16px}
@@ -158,40 +175,52 @@ textarea.finput{text-align:left;padding:12px 0;min-height:88px;resize:none;line-
 .brow{display:flex;gap:10px}
 .brow .bfield{flex:1}
 
-/* EMPTY STATE */
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 32px;text-align:center}
 .empty-ico{font-size:56px;margin-bottom:14px;opacity:.4}
 .empty-t{font-size:20px;font-weight:600;margin-bottom:6px}
 .empty-s{font-size:15px;color:var(--text2)}
 
-/* CHARTS */
 .chart-wrap{padding:10px 10px 6px}
 .chart-legend{display:flex;gap:14px;padding:0 4px 6px;font-size:11px;color:var(--text2)}
 .chart-legend span{display:flex;align-items:center;gap:4px}
 
 .hidden{display:none!important}
-.mt8{margin-top:8px}
-.mt16{margin-top:16px}
-.mb16{margin-bottom:16px}
+.mt8{margin-top:8px}.mt16{margin-top:16px}.mb16{margin-bottom:16px}
 
-/* GPS BUTTON */
 .gps-btn{display:flex;align-items:center;gap:8px;background:none;border:none;color:var(--blue);font-size:16px;font-family:inherit;cursor:pointer;touch-action:manipulation;padding:12px 16px;width:100%}
 .gps-btn:active{opacity:.7}
 .gps-dot{width:10px;height:10px;border-radius:5px;background:var(--text2);flex-shrink:0}
-.gps-dot.ok{background:var(--green)}
-.gps-dot.err{background:var(--red)}
-.gps-dot.loading{background:var(--orange);animation:pulse .8s infinite alternate}
+.gps-dot.ok{background:var(--green)}.gps-dot.err{background:var(--red)}.gps-dot.loading{background:var(--orange);animation:pulse .8s infinite alternate}
 @keyframes pulse{to{opacity:.3}}
+
+/* Address history */
+.addr-hist-row{padding:8px 16px;font-size:13px;color:var(--text2);position:relative}
+.addr-hist-row:not(:last-child)::after{content:'';position:absolute;bottom:0;left:16px;right:0;height:.5px;background:var(--sep)}
+.addr-hist-date{font-size:11px;color:var(--text2);margin-bottom:2px}
+
+/* Month bar chart */
+.bar-chart{display:flex;align-items:flex-end;gap:4px;padding:10px 16px 4px;height:80px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.bar-fill{width:100%;border-radius:3px 3px 0 0;background:var(--blue);min-height:2px;transition:height .3s}
+.bar-lbl{font-size:9px;color:var(--text2);white-space:nowrap}
+.bar-val{font-size:9px;color:var(--blue);font-weight:600}
+
+/* Segmented control for stats tabs */
+.seg-ctrl{display:flex;background:rgba(118,118,128,.12);border-radius:9px;padding:2px;margin:16px 16px 0}
+.seg-btn{flex:1;padding:7px 4px;border:none;background:none;border-radius:7px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;touch-action:manipulation;font-family:inherit;transition:all .2s}
+.seg-btn.active{background:var(--card);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.12)}
 </style>
 </head>
 <body>
 <div id="app">
 
-<!-- ===== SCREEN: PATIENTS LIST ===== -->
+<!-- ===== PATIENTS LIST ===== -->
 <div id="s-patients" class="screen active">
   <div class="navbar">
     <div class="nbc">
-      <div style="min-width:44px"></div>
+      <button class="nb-btn" onclick="A.go('stats')" title="Estadísticas">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="8" rx="1"/><rect x="10" y="7" width="4" height="13" rx="1"/><rect x="17" y="3" width="4" height="17" rx="1"/></svg>
+      </button>
       <div class="nb-title">Bitácora Médica</div>
       <button class="nb-btn" onclick="A.globalMenu()" title="Menú">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="5" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1.2" fill="currentColor" stroke="none"/></svg>
@@ -202,7 +231,22 @@ textarea.finput{text-align:left;padding:12px 0;min-height:88px;resize:none;line-
   <button class="fab" onclick="A.openPatientForm(null)">+</button>
 </div>
 
-<!-- ===== SCREEN: PATIENT FORM ===== -->
+<!-- ===== STATISTICS ===== -->
+<div id="s-stats" class="screen">
+  <div class="navbar">
+    <div class="nbc">
+      <button class="nb-btn" onclick="A.back()">
+        <svg width="9" height="15" viewBox="0 0 9 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1L1 7.5L8 14"/></svg>
+        Atrás
+      </button>
+      <div class="nb-title">Estadísticas</div>
+      <div style="min-width:44px"></div>
+    </div>
+  </div>
+  <div class="sbody" id="stats-body"></div>
+</div>
+
+<!-- ===== PATIENT FORM ===== -->
 <div id="s-pform" class="screen">
   <div class="navbar">
     <div class="nbc">
@@ -217,7 +261,7 @@ textarea.finput{text-align:left;padding:12px 0;min-height:88px;resize:none;line-
   <div class="sbody" id="pform-body"></div>
 </div>
 
-<!-- ===== SCREEN: PATIENT DETAIL ===== -->
+<!-- ===== PATIENT DETAIL ===== -->
 <div id="s-pdetail" class="screen">
   <div class="navbar">
     <div class="nbc">
@@ -235,7 +279,7 @@ textarea.finput{text-align:left;padding:12px 0;min-height:88px;resize:none;line-
   <button class="fab" onclick="A.openVisitForm(null)" title="Nueva consulta">+</button>
 </div>
 
-<!-- ===== SCREEN: VISIT FORM ===== -->
+<!-- ===== VISIT FORM ===== -->
 <div id="s-vform" class="screen">
   <div class="navbar">
     <div class="nbc">
@@ -250,7 +294,7 @@ textarea.finput{text-align:left;padding:12px 0;min-height:88px;resize:none;line-
   <div class="sbody" id="vform-body"></div>
 </div>
 
-<!-- ===== SCREEN: VISIT DETAIL ===== -->
+<!-- ===== VISIT DETAIL ===== -->
 <div id="s-vdetail" class="screen">
   <div class="navbar">
     <div class="nbc">
@@ -289,8 +333,8 @@ textarea.finput{text-align:left;padding:12px 0;min-height:88px;resize:none;line-
 <div class="bsheet" id="range-sheet">
   <div class="bsheet-title">Rango personalizado</div>
   <div class="brow">
-    <div class="bfield"><label>Desde</label><input type="date" id="rs-from" class="bottom-sheet-input" style="width:100%;background:rgba(118,118,128,.12);border:none;outline:none;border-radius:8px;padding:10px 12px;font-size:16px;color:var(--text);font-family:inherit"></div>
-    <div class="bfield"><label>Hasta</label><input type="date" id="rs-to" class="bottom-sheet-input" style="width:100%;background:rgba(118,118,128,.12);border:none;outline:none;border-radius:8px;padding:10px 12px;font-size:16px;color:var(--text);font-family:inherit"></div>
+    <div class="bfield"><label>Desde</label><input type="date" id="rs-from" style="width:100%;background:rgba(118,118,128,.12);border:none;outline:none;border-radius:8px;padding:10px 12px;font-size:16px;color:var(--text);font-family:inherit"></div>
+    <div class="bfield"><label>Hasta</label><input type="date" id="rs-to" style="width:100%;background:rgba(118,118,128,.12);border:none;outline:none;border-radius:8px;padding:10px 12px;font-size:16px;color:var(--text);font-family:inherit"></div>
   </div>
   <button class="btn btn-primary mt16" onclick="A.exportRange(document.getElementById('rs-from').value, document.getElementById('rs-to').value)">Exportar Excel</button>
 </div>
@@ -308,7 +352,6 @@ textarea.finput{text-align:left;padding:12px 0;min-height:88px;resize:none;line-
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-// ── UTILS ──────────────────────────────────────────────────────────
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
 const today = () => new Date().toISOString().slice(0,10);
 const MO = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
@@ -318,208 +361,219 @@ function fmtDate(s) {
   const [y,m,d] = s.split('-');
   return `${+d} ${MO[+m-1]} ${y}`;
 }
-
 function calcAge(dob) {
   if (!dob) return null;
-  const b = new Date(dob + 'T12:00:00'), now = new Date();
-  let a = now.getFullYear() - b.getFullYear();
-  if (now.getMonth() < b.getMonth() || (now.getMonth() === b.getMonth() && now.getDate() < b.getDate())) a--;
+  const b = new Date(dob+'T12:00:00'), now = new Date();
+  let a = now.getFullYear()-b.getFullYear();
+  if (now.getMonth()<b.getMonth()||(now.getMonth()===b.getMonth()&&now.getDate()<b.getDate())) a--;
   return a;
 }
-
-function calcBMI(w, h) {
-  if (!w || !h) return null;
-  return Math.round(w / Math.pow(h/100, 2) * 10) / 10;
+function calcBMI(w,h) {
+  if (!w||!h) return null;
+  return Math.round(w/Math.pow(h/100,2)*10)/10;
 }
-
 function bmiInfo(bmi) {
-  if (!bmi) return {txt:'—', cls:''};
-  if (bmi < 18.5) return {txt:`${bmi} Bajo peso`, cls:'bmi-u'};
-  if (bmi < 25)   return {txt:`${bmi} Normal`,    cls:'bmi-n'};
-  if (bmi < 30)   return {txt:`${bmi} Sobrepeso`, cls:'bmi-s'};
-  return {txt:`${bmi} Obesidad`, cls:'bmi-o'};
+  if (!bmi) return {txt:'—',cls:''};
+  if (bmi<18.5) return {txt:`${bmi} Bajo peso`,cls:'bmi-u'};
+  if (bmi<25)   return {txt:`${bmi} Normal`,cls:'bmi-n'};
+  if (bmi<30)   return {txt:`${bmi} Sobrepeso`,cls:'bmi-s'};
+  return {txt:`${bmi} Obesidad`,cls:'bmi-o'};
 }
-
 function initials(name) {
   return (name||'?').trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2);
 }
-
 function avatarColor(name) {
-  const cols = ['#007AFF','#34C759','#FF9500','#FF2D55','#AF52DE','#5AC8FA','#FF6B35','#00C7BE'];
-  let h = 0;
-  for (let i=0; i<(name||'').length; i++) h = (h*31 + name.charCodeAt(i)) | 0;
-  return cols[Math.abs(h) % cols.length];
+  const cols=['#007AFF','#34C759','#FF9500','#FF2D55','#AF52DE','#5AC8FA','#FF6B35','#00C7BE'];
+  let h=0;
+  for (let i=0;i<(name||'').length;i++) h=(h*31+name.charCodeAt(i))|0;
+  return cols[Math.abs(h)%cols.length];
 }
-
 function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ── APP ────────────────────────────────────────────────────────────
+// Reference ranges for blood chemistry
+function chemClass(key, val) {
+  if (!val) return '';
+  const v = +val;
+  if (key==='glucosaAyuno')  return v<100?'chem-ok':v<126?'chem-warn':'chem-hi';
+  if (key==='glucosaPost')   return v<140?'chem-ok':v<200?'chem-warn':'chem-hi';
+  if (key==='trigliceridos') return v<150?'chem-ok':v<200?'chem-warn':'chem-hi';
+  if (key==='colesterol')    return v<200?'chem-ok':v<240?'chem-warn':'chem-hi';
+  return '';
+}
+function chemRef(key) {
+  if (key==='glucosaAyuno')  return 'Normal <100';
+  if (key==='glucosaPost')   return 'Normal <140';
+  if (key==='trigliceridos') return 'Normal <150';
+  if (key==='colesterol')    return 'Normal <200';
+  return '';
+}
+
+// Minutes since last meal from time string "HH:MM"
+function minutesSinceMeal(timeStr) {
+  if (!timeStr) return null;
+  const [hh,mm] = timeStr.split(':').map(Number);
+  const now = new Date();
+  const meal = new Date(); meal.setHours(hh,mm,0,0);
+  let diff = (now - meal) / 60000;
+  if (diff < 0) diff += 1440; // crossed midnight
+  return Math.round(diff);
+}
+function mealContext(timeStr) {
+  const mins = minutesSinceMeal(timeStr);
+  if (mins === null) return '';
+  if (mins >= 480) return `Ayuno (${Math.round(mins/60)}h)`;
+  return `Postprandial (${Math.round(mins/60)}h ${mins%60}m)`;
+}
+
 const A = {
   patients: [],
   stack: ['patients'],
-  pid: null,   // current patient id
-  vid: null,   // current visit id
-  ePt: null,   // patient being edited
-  eVt: null,   // visit being edited
-  tMeds: [],   // temp medications
-  tDiags: [],  // temp diagnoses
-  msTarget: 'pf', // med sheet target prefix
+  pid: null,
+  vid: null,
+  ePt: null,
+  eVt: null,
+  tMeds: [],
+  tDiags: [],
+  msTarget: 'pf',
   _mActs: [],
   _sActs: [],
 
-  // ── STORAGE ──
   load() {
-    try { this.patients = JSON.parse(localStorage.getItem('bm-patients') || '[]'); }
+    try { this.patients = JSON.parse(localStorage.getItem('bm-patients')||'[]'); }
     catch { this.patients = []; }
   },
-  persist() {
-    localStorage.setItem('bm-patients', JSON.stringify(this.patients));
-  },
+  persist() { localStorage.setItem('bm-patients', JSON.stringify(this.patients)); },
 
-  // ── PATIENT CRUD ──
-  pt(id) { return this.patients.find(p => p.id === id); },
+  pt(id) { return this.patients.find(p=>p.id===id); },
 
   savePt(d) {
     if (d.id) {
-      const i = this.patients.findIndex(p => p.id === d.id);
-      if (i >= 0) this.patients[i] = {...this.patients[i], ...d};
+      const i = this.patients.findIndex(p=>p.id===d.id);
+      if (i>=0) this.patients[i] = {...this.patients[i], ...d};
     } else {
-      d.id = uid(); d.createdAt = new Date().toISOString(); d.visits = [];
+      d.id=uid(); d.createdAt=new Date().toISOString(); d.visits=[];
       this.patients.unshift(d);
     }
     this.persist();
   },
 
-  delPt(id) {
-    this.patients = this.patients.filter(p => p.id !== id);
-    this.persist();
-  },
+  delPt(id) { this.patients=this.patients.filter(p=>p.id!==id); this.persist(); },
 
   saveVt(pid, d) {
-    const p = this.pt(pid);
-    if (!p) return;
-    if (!p.visits) p.visits = [];
+    const p=this.pt(pid); if (!p) return;
+    if (!p.visits) p.visits=[];
     if (d.id) {
-      const i = p.visits.findIndex(v => v.id === d.id);
-      if (i >= 0) p.visits[i] = {...p.visits[i], ...d};
+      const i=p.visits.findIndex(v=>v.id===d.id);
+      if (i>=0) p.visits[i]={...p.visits[i],...d};
     } else {
-      d.id = uid(); d.createdAt = new Date().toISOString();
+      d.id=uid(); d.createdAt=new Date().toISOString();
       p.visits.unshift(d);
     }
     this.persist();
   },
 
-  delVt(pid, vid) {
-    const p = this.pt(pid);
-    if (p) { p.visits = p.visits.filter(v => v.id !== vid); this.persist(); }
+  delVt(pid,vid) {
+    const p=this.pt(pid);
+    if (p) { p.visits=p.visits.filter(v=>v.id!==vid); this.persist(); }
   },
 
   // ── NAVIGATION ──
   go(screen, params={}) {
-    const cur = this.stack[this.stack.length-1];
+    const cur=this.stack[this.stack.length-1];
     document.getElementById(`s-${cur}`)?.classList.add('prev');
     this.stack.push(screen);
-    // Resetear el screen destino antes de animarlo (fix: pantalla a medias al reusar)
-    const el = document.getElementById(`s-${screen}`);
-    if (el) {
-      el.classList.remove('active', 'prev');
-      el.style.transform = 'translateX(100%)'; // forzar posición inicial
-    }
-    if (screen === 'pform')   { this.ePt = params.pt||null; this.renderPForm(); }
-    if (screen === 'pdetail') { this.pid = params.pid; this.renderPDetail(); }
-    if (screen === 'vform')   { this.eVt = params.vt||null; this.renderVForm(); }
-    if (screen === 'vdetail') { this.vid = params.vid; this.renderVDetail(); }
-    // doble rAF SEPARADO: 1er frame pinta el estado inicial, 2do frame dispara la transición
+    const el=document.getElementById(`s-${screen}`);
+    if (el) { el.classList.remove('active','prev'); el.style.transform='translateX(100%)'; }
+    if (screen==='pform')   { this.ePt=params.pt||null; this.renderPForm(); }
+    if (screen==='pdetail') { this.pid=params.pid; this.renderPDetail(); }
+    if (screen==='vform')   { this.eVt=params.vt||null; this.renderVForm(); }
+    if (screen==='vdetail') { this.vid=params.vid; this.renderVDetail(); }
+    if (screen==='stats')   { this.renderStats(); }
     requestAnimationFrame(() => {
-      if (el) el.style.transform = ''; // Frame 1: quita inline → CSS da translateX(100%)
-      requestAnimationFrame(() => {
-        document.getElementById(`s-${screen}`)?.classList.add('active'); // Frame 2: transición 100%→0%
-      });
+      if (el) el.style.transform='';
+      requestAnimationFrame(() => { document.getElementById(`s-${screen}`)?.classList.add('active'); });
     });
   },
 
   back() {
-    if (this.stack.length <= 1) return;
-    const cur = this.stack.pop();
-    const el = document.getElementById(`s-${cur}`);
-    if (el) {
-      el.classList.remove('active');
-      // Limpiar clases residuales tras la transición de salida
-      setTimeout(() => { el.classList.remove('prev'); el.style.transform = ''; }, 400);
-    }
-    const prev = this.stack[this.stack.length-1];
+    if (this.stack.length<=1) return;
+    const cur=this.stack.pop();
+    const el=document.getElementById(`s-${cur}`);
+    if (el) { el.classList.remove('active'); setTimeout(()=>{el.classList.remove('prev');el.style.transform='';},400); }
+    const prev=this.stack[this.stack.length-1];
     document.getElementById(`s-${prev}`)?.classList.remove('prev');
-    if (prev === 'patients') this.renderList();
-    if (prev === 'pdetail')  this.renderPDetail();
-    if (prev === 'vdetail')  this.renderVDetail();
+    if (prev==='patients') this.renderList();
+    if (prev==='pdetail')  this.renderPDetail();
+    if (prev==='vdetail')  this.renderVDetail();
+    if (prev==='stats')    this.renderStats();
   },
 
   // ── RENDER: LIST ──
   renderList() {
-    const body = document.getElementById('list-body');
-    const q = body.querySelector('.searchbar input')?.value || '';
-    const all = q ? this.patients.filter(p => p.name.toLowerCase().includes(q.toLowerCase())) : this.patients;
-
-    let h = `<div style="padding:0 0 4px"><div class="searchbar">
+    const body=document.getElementById('list-body');
+    const q=body.querySelector('.searchbar input')?.value||'';
+    const all=q?this.patients.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())):this.patients;
+    let h=`<div style="padding:0 0 4px"><div class="searchbar">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#8E8E93" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="5.5"/><path d="M11.5 11.5l3 3"/></svg>
       <input placeholder="Buscar pacientes" oninput="A.filterList(this.value)" value="${esc(q)}">
     </div></div>`;
-
     if (!this.patients.length) {
-      h += `<div class="empty"><div class="empty-ico">👨‍⚕️</div><div class="empty-t">Sin pacientes</div><div class="empty-s">Toca + para agregar tu primer paciente</div></div>`;
+      h+=`<div class="empty"><div class="empty-ico">👨‍⚕️</div><div class="empty-t">Sin pacientes</div><div class="empty-s">Toca + para agregar tu primer paciente</div></div>`;
     } else if (!all.length) {
-      h += `<div class="empty"><div class="empty-ico">🔍</div><div class="empty-t">Sin resultados</div></div>`;
+      h+=`<div class="empty"><div class="empty-ico">🔍</div><div class="empty-t">Sin resultados</div></div>`;
     } else {
-      h += `<div class="sec-hdr">${all.length} PACIENTE${all.length!==1?'S':''}</div><div class="card">`;
-      all.forEach(p => {
-        const age = calcAge(p.dob);
-        const last = p.visits?.length ? `Últ: ${fmtDate(p.visits[0].date)}` : 'Sin consultas';
-        h += `<div class="row arrow" onclick="A.go('pdetail',{pid:'${p.id}'})">
+      h+=`<div class="sec-hdr">${all.length} PACIENTE${all.length!==1?'S':''}</div><div class="card">`;
+      all.forEach(p=>{
+        const age=calcAge(p.dob);
+        const last=p.visits?.length?`Últ: ${fmtDate(p.visits[0].date)}`:'Sin consultas';
+        const addrParts=[p.colonia,p.municipio].filter(Boolean);
+        const addrSub=addrParts.length?` · ${addrParts.join(', ')}` : '';
+        h+=`<div class="row arrow" onclick="A.go('pdetail',{pid:'${p.id}'})">
           <div class="row-icon" style="background:${avatarColor(p.name)}">${esc(initials(p.name))}</div>
           <div class="row-main">
             <div class="row-title">${esc(p.name)}</div>
-            <div class="row-sub">${age!=null?age+' años · ':''}${p.sex==='M'?'Masc':p.sex==='F'?'Fem':''} · ${last}</div>
+            <div class="row-sub">${age!=null?age+' años · ':''}${p.sex==='M'?'Masc':p.sex==='F'?'Fem':''} · ${last}${addrSub}</div>
           </div>
-          ${p.visits?.length ? `<span class="badge">${p.visits.length}</span>` : ''}
+          ${p.visits?.length?`<span class="badge">${p.visits.length}</span>`:''}
         </div>`;
       });
-      h += '</div>';
+      h+='</div>';
     }
-    body.innerHTML = h;
+    body.innerHTML=h;
   },
 
   filterList(q) {
-    const all = q ? this.patients.filter(p => p.name.toLowerCase().includes(q.toLowerCase())) : this.patients;
-    const card = document.querySelector('#list-body .card');
-    const hdr = document.querySelector('#list-body .sec-hdr');
+    const all=q?this.patients.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())):this.patients;
+    const card=document.querySelector('#list-body .card');
+    const hdr=document.querySelector('#list-body .sec-hdr');
     if (!card) return this.renderList();
-    if (hdr) hdr.textContent = `${all.length} PACIENTE${all.length!==1?'S':''}`;
-    if (!all.length) { card.innerHTML = '<div class="empty"><div class="empty-ico">🔍</div><div class="empty-t">Sin resultados</div></div>'; return; }
-    card.innerHTML = all.map(p => {
-      const age = calcAge(p.dob);
-      const last = p.visits?.length ? `Últ: ${fmtDate(p.visits[0].date)}` : 'Sin consultas';
+    if (hdr) hdr.textContent=`${all.length} PACIENTE${all.length!==1?'S':''}`;
+    if (!all.length) { card.innerHTML='<div class="empty"><div class="empty-ico">🔍</div><div class="empty-t">Sin resultados</div></div>'; return; }
+    card.innerHTML=all.map(p=>{
+      const age=calcAge(p.dob);
+      const last=p.visits?.length?`Últ: ${fmtDate(p.visits[0].date)}`:'Sin consultas';
       return `<div class="row arrow" onclick="A.go('pdetail',{pid:'${p.id}'})">
         <div class="row-icon" style="background:${avatarColor(p.name)}">${esc(initials(p.name))}</div>
         <div class="row-main"><div class="row-title">${esc(p.name)}</div>
         <div class="row-sub">${age!=null?age+' años · ':''}${p.sex==='M'?'Masc':p.sex==='F'?'Fem':''} · ${last}</div></div>
-        ${p.visits?.length ? `<span class="badge">${p.visits.length}</span>` : ''}
+        ${p.visits?.length?`<span class="badge">${p.visits.length}</span>`:''}
       </div>`;
     }).join('');
   },
 
   // ── RENDER: PATIENT FORM ──
-  openPatientForm(pt) { this.go('pform', {pt}); },
+  openPatientForm(pt) { this.go('pform',{pt}); },
 
   renderPForm() {
-    const p = this.ePt;
-    document.getElementById('pform-title').textContent = p ? 'Editar Paciente' : 'Nuevo Paciente';
-    this.tMeds  = p ? JSON.parse(JSON.stringify(p.medications||[])) : [];
-    this.tDiags = p ? [...(p.diagnoses||[])] : [];
-    this.msTarget = 'pf';
+    const p=this.ePt;
+    document.getElementById('pform-title').textContent=p?'Editar Paciente':'Nuevo Paciente';
+    this.tMeds=p?JSON.parse(JSON.stringify(p.medications||[])):[];
+    this.tDiags=p?[...(p.diagnoses||[])]:[];
+    this.msTarget='pf';
 
-    document.getElementById('pform-body').innerHTML = `
+    document.getElementById('pform-body').innerHTML=`
     <div class="form-sec">
       <div class="form-hdr">Datos Personales</div>
       <div class="card">
@@ -533,6 +587,23 @@ const A = {
             <option value="M" ${p?.sex==='M'?'selected':''}>Masculino</option>
             <option value="F" ${p?.sex==='F'?'selected':''}>Femenino</option>
           </select></div>
+      </div>
+    </div>
+    <div class="form-sec">
+      <div class="form-hdr">Domicilio / Procedencia</div>
+      <div class="card">
+        <div class="frow"><span class="flabel">Estado</span>
+          <input class="finput left" id="pf-estado" placeholder="ej. Sinaloa" value="${esc(p?.estado||'')}"></div>
+        <div class="frow"><span class="flabel">Municipio</span>
+          <input class="finput left" id="pf-municipio" placeholder="ej. Mazatlán" value="${esc(p?.municipio||'')}"></div>
+        <div class="frow"><span class="flabel">Colonia</span>
+          <input class="finput left" id="pf-colonia" placeholder="ej. Centro" value="${esc(p?.colonia||'')}"></div>
+        <div class="frow"><span class="flabel">Fraccionamiento</span>
+          <input class="finput left" id="pf-fracc" placeholder="Opcional" value="${esc(p?.fracc||'')}"></div>
+        <div class="frow"><span class="flabel">Calle</span>
+          <input class="finput left" id="pf-calle" placeholder="ej. Av. Del Mar" value="${esc(p?.calle||'')}"></div>
+        <div class="frow"><span class="flabel">Núm. Ext/Int</span>
+          <input class="finput" id="pf-num" placeholder="123 / A" value="${esc(p?.numExt||'')}"></div>
       </div>
     </div>
     <div class="form-sec">
@@ -572,30 +643,30 @@ const A = {
         <div class="frow" style="padding:0"><textarea class="finput left" id="pf-notes" placeholder="Notas adicionales...">${esc(p?.notes||'')}</textarea></div>
       </div>
     </div>
-    ${p ? `<button class="btn btn-danger" onclick="A.confirmDelPt('${p.id}')">Eliminar Paciente</button>` : ''}
+    ${p?`<button class="btn btn-danger" onclick="A.confirmDelPt('${p.id}')">Eliminar Paciente</button>`:''}
     <div style="height:24px"></div>`;
   },
 
-  bmiHtml(w, h) {
-    const b = calcBMI(w,h);
+  bmiHtml(w,h) {
+    const b=calcBMI(w,h);
     if (!b) return '<span style="color:var(--text2)">—</span>';
-    const {txt,cls} = bmiInfo(b);
+    const {txt,cls}=bmiInfo(b);
     return `<span class="${cls}">${txt}</span>`;
   },
 
   updBMI() {
-    const w = parseFloat(document.getElementById('pf-w')?.value);
-    const h = parseFloat(document.getElementById('pf-h')?.value);
-    const el = document.getElementById('pf-bmi');
-    if (el) el.innerHTML = this.bmiHtml(w, h);
+    const w=parseFloat(document.getElementById('pf-w')?.value);
+    const h=parseFloat(document.getElementById('pf-h')?.value);
+    const el=document.getElementById('pf-bmi');
+    if (el) el.innerHTML=this.bmiHtml(w,h);
   },
 
-  tagsHtml(arr, pfx) {
-    return arr.map((t,i) => `<div class="tag">${esc(t)}<button class="tag-x" onclick="A.remDiag('${pfx}',${i})">×</button></div>`).join('');
+  tagsHtml(arr,pfx) {
+    return arr.map((t,i)=>`<div class="tag">${esc(t)}<button class="tag-x" onclick="A.remDiag('${pfx}',${i})">×</button></div>`).join('');
   },
 
-  medsHtml(arr, pfx) {
-    return arr.map((m,i) => `<div class="med-row">
+  medsHtml(arr,pfx) {
+    return arr.map((m,i)=>`<div class="med-row">
       <div class="med-info"><div class="med-name">${esc(m.name)}</div>
         <div class="med-detail">${esc(m.dose)}${m.dose&&m.frequency?' · ':''}${esc(m.frequency)}</div></div>
       <button class="med-del" onclick="A.remMed('${pfx}',${i})">−</button>
@@ -603,73 +674,103 @@ const A = {
   },
 
   addDiag(pfx) {
-    const inp = document.getElementById(`${pfx}-ti`);
-    const v = inp?.value.trim();
-    if (!v) return;
-    this.tDiags.push(v);
-    inp.value = '';
-    document.getElementById(`${pfx}-tags`).innerHTML = this.tagsHtml(this.tDiags, pfx);
+    const inp=document.getElementById(`${pfx}-ti`);
+    const v=inp?.value.trim(); if (!v) return;
+    this.tDiags.push(v); inp.value='';
+    document.getElementById(`${pfx}-tags`).innerHTML=this.tagsHtml(this.tDiags,pfx);
   },
 
-  remDiag(pfx, i) {
+  remDiag(pfx,i) {
     this.tDiags.splice(i,1);
-    document.getElementById(`${pfx}-tags`).innerHTML = this.tagsHtml(this.tDiags, pfx);
+    document.getElementById(`${pfx}-tags`).innerHTML=this.tagsHtml(this.tDiags,pfx);
   },
 
-  remMed(pfx, i) {
+  remMed(pfx,i) {
     this.tMeds.splice(i,1);
-    document.getElementById(`${pfx}-meds`).innerHTML = this.medsHtml(this.tMeds, pfx);
+    document.getElementById(`${pfx}-meds`).innerHTML=this.medsHtml(this.tMeds,pfx);
   },
 
   showMedSheet(pfx) {
-    this.msTarget = pfx;
-    ['ms-name','ms-dose','ms-freq'].forEach(id => document.getElementById(id).value='');
+    this.msTarget=pfx;
+    ['ms-name','ms-dose','ms-freq'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('med-sheet').classList.add('show');
     document.getElementById('sheet-bg').classList.add('show');
-    setTimeout(() => document.getElementById('ms-name').focus(), 350);
+    setTimeout(()=>document.getElementById('ms-name').focus(),350);
   },
 
   addMedFromSheet() {
-    const name = document.getElementById('ms-name').value.trim();
+    const name=document.getElementById('ms-name').value.trim();
     if (!name) return;
-    this.tMeds.push({ name, dose: document.getElementById('ms-dose').value.trim(), frequency: document.getElementById('ms-freq').value.trim() });
+    this.tMeds.push({name,dose:document.getElementById('ms-dose').value.trim(),frequency:document.getElementById('ms-freq').value.trim()});
     this.closeSheet();
-    document.getElementById(`${this.msTarget}-meds`).innerHTML = this.medsHtml(this.tMeds, this.msTarget);
+    document.getElementById(`${this.msTarget}-meds`).innerHTML=this.medsHtml(this.tMeds,this.msTarget);
   },
 
   savePForm() {
-    const name = document.getElementById('pf-name')?.value.trim();
+    const name=document.getElementById('pf-name')?.value.trim();
     if (!name) { this.showAlert('Nombre requerido','Ingresa el nombre del paciente.'); return; }
-    const d = {
-      id: this.ePt?.id, name,
-      dob:    document.getElementById('pf-dob')?.value || '',
-      sex:    document.getElementById('pf-sex')?.value || '',
-      weight: parseFloat(document.getElementById('pf-w')?.value) || 0,
-      height: parseFloat(document.getElementById('pf-h')?.value) || 0,
+
+    // Build new address
+    const newAddr={
+      estado:    document.getElementById('pf-estado')?.value.trim()||'',
+      municipio: document.getElementById('pf-municipio')?.value.trim()||'',
+      colonia:   document.getElementById('pf-colonia')?.value.trim()||'',
+      fracc:     document.getElementById('pf-fracc')?.value.trim()||'',
+      calle:     document.getElementById('pf-calle')?.value.trim()||'',
+      numExt:    document.getElementById('pf-num')?.value.trim()||'',
+    };
+
+    // Address history: push old if changed
+    let addressHistory=this.ePt?.addressHistory||[];
+    if (this.ePt) {
+      const oldAddr={
+        estado:this.ePt.estado||'', municipio:this.ePt.municipio||'',
+        colonia:this.ePt.colonia||'', fracc:this.ePt.fracc||'',
+        calle:this.ePt.calle||'', numExt:this.ePt.numExt||''
+      };
+      const hasOld=Object.values(oldAddr).some(v=>v);
+      const changed=JSON.stringify(oldAddr)!==JSON.stringify(newAddr);
+      if (hasOld && changed) {
+        addressHistory=[...addressHistory, {...oldAddr, savedAt:new Date().toISOString()}];
+      }
+    }
+
+    const d={
+      id:this.ePt?.id, name,
+      dob:    document.getElementById('pf-dob')?.value||'',
+      sex:    document.getElementById('pf-sex')?.value||'',
+      weight: parseFloat(document.getElementById('pf-w')?.value)||0,
+      height: parseFloat(document.getElementById('pf-h')?.value)||0,
       diagnoses:   [...this.tDiags],
       medications: JSON.parse(JSON.stringify(this.tMeds)),
-      notes:  document.getElementById('pf-notes')?.value.trim() || '',
+      notes:  document.getElementById('pf-notes')?.value.trim()||'',
+      ...newAddr,
+      addressHistory,
     };
     this.savePt(d);
-    if (!this.ePt) this.pid = this.patients[0].id;
+    if (!this.ePt) this.pid=this.patients[0].id;
     this.back();
     if (this.ePt) this.renderPDetail();
   },
 
   // ── RENDER: PATIENT DETAIL ──
   renderPDetail() {
-    const p = this.pt(this.pid);
-    if (!p) return this.back();
-    document.getElementById('pdetail-title').textContent = p.name.split(' ')[0];
-    const age = calcAge(p.dob), bmi = calcBMI(p.weight,p.height);
-    const {txt:bmiTxt,cls:bmiCls} = bmiInfo(bmi);
-    const lv = p.visits?.[0];
+    const p=this.pt(this.pid); if (!p) return this.back();
+    document.getElementById('pdetail-title').textContent=p.name.split(' ')[0];
+    const age=calcAge(p.dob), bmi=calcBMI(p.weight,p.height);
+    const {txt:bmiTxt,cls:bmiCls}=bmiInfo(bmi);
+    const lv=p.visits?.[0];
 
-    let h = `
+    // Build address display
+    const addrParts=[p.calle&&p.numExt?`${p.calle} ${p.numExt}`:p.calle,p.fracc,p.colonia,p.municipio,p.estado].filter(Boolean);
+    const addrStr=addrParts.join(', ');
+
+    let h=`
     <div class="pt-head">
       <div class="pt-avatar" style="background:${avatarColor(p.name)}">${esc(initials(p.name))}</div>
       <div class="pt-name">${esc(p.name)}</div>
-      <div class="pt-meta">${[age!=null?age+' años':null, p.sex==='M'?'Masculino':p.sex==='F'?'Femenino':null, p.dob?fmtDate(p.dob):null].filter(Boolean).join(' · ')}</div>
+      <div class="pt-meta">${[age!=null?age+' años':null,p.sex==='M'?'Masculino':p.sex==='F'?'Femenino':null,p.dob?fmtDate(p.dob):null].filter(Boolean).join(' · ')}</div>
+      ${addrStr?`<div class="pt-addr">📍 ${esc(addrStr)}</div>`:''}
     </div>
     <div class="stats">
       <div class="stat-card"><div class="stat-lbl">Peso</div><div class="stat-val">${lv?.weight||p.weight||'—'}<span class="stat-unit"> kg</span></div></div>
@@ -679,12 +780,12 @@ const A = {
     </div>`;
 
     if (p.diagnoses?.length) {
-      h += `<div class="sec-hdr">Diagnósticos de Base</div>
+      h+=`<div class="sec-hdr">Diagnósticos de Base</div>
       <div class="card"><div class="tags" style="padding:12px 16px">${p.diagnoses.map(d=>`<div class="tag">${esc(d)}</div>`).join('')}</div></div>`;
     }
 
     if (p.medications?.length) {
-      h += `<div class="sec-hdr">Medicamentos de Base</div><div class="card">
+      h+=`<div class="sec-hdr">Medicamentos de Base</div><div class="card">
         ${p.medications.map(m=>`<div class="med-row" style="padding:12px 16px">
           <div class="med-info"><div class="med-name">${esc(m.name)}</div>
           <div class="med-detail">${esc(m.dose)}${m.dose&&m.frequency?' · ':''}${esc(m.frequency)}</div></div>
@@ -692,62 +793,73 @@ const A = {
       </div>`;
     }
 
-    h += `<div class="sec-hdr">Historial de Consultas</div><div class="card">`;
+    // Address history
+    if (p.addressHistory?.length) {
+      h+=`<div class="sec-hdr">Domicilios Anteriores</div><div class="card">
+        ${p.addressHistory.slice().reverse().map(a=>{
+          const parts=[a.calle&&a.numExt?`${a.calle} ${a.numExt}`:a.calle,a.fracc,a.colonia,a.municipio,a.estado].filter(Boolean);
+          return `<div class="addr-hist-row">
+            <div class="addr-hist-date">${a.savedAt?fmtDate(a.savedAt.slice(0,10)):''}</div>
+            <div>${esc(parts.join(', '))}</div>
+          </div>`;
+        }).join('')}
+      </div>`;
+    }
+
+    h+=`<div class="sec-hdr">Historial de Consultas</div><div class="card">`;
     if (!p.visits?.length) {
-      h += `<div style="padding:24px 16px;text-align:center;color:var(--text2)">Sin consultas registradas</div>`;
+      h+=`<div style="padding:24px 16px;text-align:center;color:var(--text2)">Sin consultas registradas</div>`;
     } else {
-      p.visits.forEach(v => {
-        const [yr,mo,dy] = (v.date||today()).split('-');
-        const chips = [
-          v.weight ? `⚖ ${v.weight}kg` : null,
-          v.bpSystolic&&v.bpDiastolic ? `♥ ${v.bpSystolic}/${v.bpDiastolic}` : null,
-          v.temperature ? `🌡 ${v.temperature}°C` : null,
-          v.heartRate ? `💓 ${v.heartRate}` : null,
+      p.visits.forEach(v=>{
+        const [yr,mo,dy]=(v.date||today()).split('-');
+        const chips=[
+          v.weight?`⚖ ${v.weight}kg`:null,
+          v.bpSystolic&&v.bpDiastolic?`♥ ${v.bpSystolic}/${v.bpDiastolic}`:null,
+          v.temperature?`🌡 ${v.temperature}°C`:null,
+          v.heartRate?`💓 ${v.heartRate}`:null,
+          v.glucosaAyuno?`🩸 ${v.glucosaAyuno}`:null,
+          v.colesterol?`🫀 Col:${v.colesterol}`:null,
         ].filter(Boolean);
-        const main = v.diagnoses?.[0] || 'Consulta';
-        const extra = (v.diagnoses?.length||0) > 1 ? ` <span style="color:var(--text2);font-size:12px">+${v.diagnoses.length-1}</span>` : '';
-        h += `<div class="visit-row arrow" onclick="A.go('vdetail',{vid:'${v.id}'})">
+        const main=v.diagnoses?.[0]||'Consulta';
+        const extra=(v.diagnoses?.length||0)>1?` <span style="color:var(--text2);font-size:12px">+${v.diagnoses.length-1}</span>`:'';
+        h+=`<div class="visit-row arrow" onclick="A.go('vdetail',{vid:'${v.id}'})">
           <div class="vdate"><div class="vday">${+dy}</div><div class="vmon">${MO[+mo-1]} ${yr.slice(2)}</div></div>
           <div class="vcontent">
             <div class="vtitle">${esc(main)}${extra}</div>
             <div class="vchips">${chips.map(c=>`<span class="chip">${c}</span>`).join('')}</div>
-            ${v.notes ? `<div class="vnotes">${esc(v.notes)}</div>` : ''}
+            ${v.notes?`<div class="vnotes">${esc(v.notes)}</div>`:''}
           </div>
         </div>`;
       });
     }
-    h += `</div>`;
+    h+=`</div>`;
 
-    // Gráficas de tendencia
-    h += this.renderCharts(p);
+    h+=this.renderCharts(p);
 
     if (p.notes) {
-      h += `<div class="sec-hdr">Notas</div>
+      h+=`<div class="sec-hdr">Notas</div>
       <div class="card"><div style="padding:12px 16px;font-size:15px;line-height:1.5">${esc(p.notes)}</div></div>`;
     }
 
-    h += '<div style="height:80px"></div>';
-    document.getElementById('pdetail-body').innerHTML = h;
+    h+='<div style="height:80px"></div>';
+    document.getElementById('pdetail-body').innerHTML=h;
   },
 
   // ── RENDER: VISIT FORM ──
-  openVisitForm(vt) { this.go('vform', {vt}); },
+  openVisitForm(vt) { this.go('vform',{vt}); },
 
   renderVForm() {
-    const v = this.eVt, p = this.pt(this.pid);
-    document.getElementById('vform-title').textContent = v ? 'Editar Consulta' : 'Nueva Consulta';
-    this.tMeds  = v ? JSON.parse(JSON.stringify(v.medications||[])) : JSON.parse(JSON.stringify(p?.medications||[]));
-    this.tDiags = v ? [...(v.diagnoses||[])] : [...(p?.diagnoses||[])];
-    this.tLat   = v?.lat  || null;
-    this.tLng   = v?.lng  || null;
-    this.msTarget = 'vf';
+    const v=this.eVt, p=this.pt(this.pid);
+    document.getElementById('vform-title').textContent=v?'Editar Consulta':'Nueva Consulta';
+    this.tMeds=v?JSON.parse(JSON.stringify(v.medications||[])):JSON.parse(JSON.stringify(p?.medications||[]));
+    this.tDiags=v?[...(v.diagnoses||[])]: [...(p?.diagnoses||[])];
+    this.tLat=v?.lat||null; this.tLng=v?.lng||null;
+    this.msTarget='vf';
 
-    const gpsLabel = this.tLat
-      ? `${this.tLat.toFixed(5)}, ${this.tLng.toFixed(5)}`
-      : 'Capturar ubicación del domicilio';
-    const gpsCls = this.tLat ? 'ok' : '';
+    const gpsLabel=this.tLat?`${this.tLat.toFixed(5)}, ${this.tLng.toFixed(5)}`:'Capturar ubicación del domicilio';
+    const gpsCls=this.tLat?'ok':'';
 
-    document.getElementById('vform-body').innerHTML = `
+    document.getElementById('vform-body').innerHTML=`
     <div class="form-sec">
       <div class="form-hdr">Fecha de Consulta</div>
       <div class="card">
@@ -756,7 +868,7 @@ const A = {
       </div>
     </div>
     <div class="form-sec">
-      <div class="form-hdr">Ubicación</div>
+      <div class="form-hdr">Ubicación GPS</div>
       <div class="card">
         <button class="gps-btn" onclick="A.captureGPS()" id="gps-btn">
           <span class="gps-dot ${gpsCls}" id="gps-dot"></span>
@@ -786,6 +898,26 @@ const A = {
       </div>
     </div>
     <div class="form-sec">
+      <div class="form-hdr">Química Sanguínea</div>
+      <div class="card">
+        <div class="frow"><span class="flabel">Últ. alimento</span>
+          <input class="finput" id="vf-ultalim" type="time" value="${v?.ultimaComida||''}">
+        </div>
+        <div class="frow"><span class="flabel">Glucosa ayuno</span>
+          <input class="finput" id="vf-glu" type="number" step="1" placeholder="—" value="${v?.glucosaAyuno||''}">
+          <span style="color:var(--text2);font-size:13px;margin-left:4px">mg/dL</span></div>
+        <div class="frow"><span class="flabel">Glucosa post.</span>
+          <input class="finput" id="vf-glup" type="number" step="1" placeholder="—" value="${v?.glucosaPost||''}">
+          <span style="color:var(--text2);font-size:13px;margin-left:4px">mg/dL</span></div>
+        <div class="frow"><span class="flabel">Triglicéridos</span>
+          <input class="finput" id="vf-trig" type="number" step="1" placeholder="—" value="${v?.trigliceridos||''}">
+          <span style="color:var(--text2);font-size:13px;margin-left:4px">mg/dL</span></div>
+        <div class="frow"><span class="flabel">Colesterol</span>
+          <input class="finput" id="vf-col" type="number" step="1" placeholder="—" value="${v?.colesterol||''}">
+          <span style="color:var(--text2);font-size:13px;margin-left:4px">mg/dL</span></div>
+      </div>
+    </div>
+    <div class="form-sec">
       <div class="form-hdr">Diagnósticos</div>
       <div class="card">
         <div class="tags" id="vf-tags">${this.tagsHtml(this.tDiags,'vf')}</div>
@@ -811,52 +943,69 @@ const A = {
         <div class="frow" style="padding:0"><textarea class="finput left" id="vf-notes" placeholder="Observaciones, indicaciones...">${esc(v?.notes||'')}</textarea></div>
       </div>
     </div>
-    ${v ? `<button class="btn btn-danger" onclick="A.confirmDelVt('${this.pid}','${v.id}')">Eliminar Consulta</button>` : ''}
+    ${v?`<button class="btn btn-danger" onclick="A.confirmDelVt('${this.pid}','${v.id}')">Eliminar Consulta</button>`:''}
     <div style="height:24px"></div>`;
   },
 
   saveVForm() {
-    const date = document.getElementById('vf-date')?.value;
+    const date=document.getElementById('vf-date')?.value;
     if (!date) { this.showAlert('Fecha requerida','Selecciona la fecha de la consulta.'); return; }
-    const d = {
-      id: this.eVt?.id, date,
+    const d={
+      id:this.eVt?.id, date,
       weight:      parseFloat(document.getElementById('vf-w')?.value)||0,
       bpSystolic:  parseInt(document.getElementById('vf-sys')?.value)||0,
       bpDiastolic: parseInt(document.getElementById('vf-dia')?.value)||0,
       temperature: parseFloat(document.getElementById('vf-temp')?.value)||0,
       heartRate:   parseInt(document.getElementById('vf-hr')?.value)||0,
+      ultimaComida: document.getElementById('vf-ultalim')?.value||'',
+      glucosaAyuno: parseInt(document.getElementById('vf-glu')?.value)||0,
+      glucosaPost:  parseInt(document.getElementById('vf-glup')?.value)||0,
+      trigliceridos:parseInt(document.getElementById('vf-trig')?.value)||0,
+      colesterol:   parseInt(document.getElementById('vf-col')?.value)||0,
       diagnoses:   [...this.tDiags],
       medications: JSON.parse(JSON.stringify(this.tMeds)),
       notes:       document.getElementById('vf-notes')?.value.trim()||'',
-      lat: this.tLat || null,
-      lng: this.tLng || null,
+      lat: this.tLat||null,
+      lng: this.tLng||null,
     };
-    this.saveVt(this.pid, d);
+    this.saveVt(this.pid,d);
     this.back();
     this.renderPDetail();
   },
 
   // ── RENDER: VISIT DETAIL ──
   renderVDetail() {
-    const p = this.pt(this.pid);
-    if (!p) return;
-    const v = p.visits.find(v => v.id === this.vid);
-    if (!v) return this.back();
-    document.getElementById('vdetail-title').textContent = fmtDate(v.date);
+    const p=this.pt(this.pid); if (!p) return;
+    const v=p.visits.find(v=>v.id===this.vid); if (!v) return this.back();
+    document.getElementById('vdetail-title').textContent=fmtDate(v.date);
 
-    let h = '<div style="margin-top:16px">';
+    let h='<div style="margin-top:16px">';
 
-    h += `<div class="sec-hdr">Signos Vitales</div><div class="card">`;
-    if (v.weight) h += `<div class="row"><div class="row-main"><span class="row-title">Peso</span></div><span class="row-val">${v.weight} kg</span></div>`;
-    if (v.bpSystolic&&v.bpDiastolic) h += `<div class="row"><div class="row-main"><span class="row-title">Presión Arterial</span></div><span class="row-val">${v.bpSystolic}/${v.bpDiastolic} mmHg</span></div>`;
-    if (v.temperature) h += `<div class="row"><div class="row-main"><span class="row-title">Temperatura</span></div><span class="row-val">${v.temperature} °C</span></div>`;
-    if (v.heartRate)   h += `<div class="row"><div class="row-main"><span class="row-title">Frec. Cardiaca</span></div><span class="row-val">${v.heartRate} lpm</span></div>`;
-    if (!v.weight && !v.bpSystolic && !v.temperature && !v.heartRate)
-      h += `<div style="padding:14px 16px;color:var(--text2);font-size:15px">Sin signos registrados</div>`;
-    h += '</div>';
+    // Signos vitales
+    h+=`<div class="sec-hdr">Signos Vitales</div><div class="card">`;
+    if (v.weight)                         h+=`<div class="row"><div class="row-main"><span class="row-title">Peso</span></div><span class="row-val">${v.weight} kg</span></div>`;
+    if (v.bpSystolic&&v.bpDiastolic)      h+=`<div class="row"><div class="row-main"><span class="row-title">Presión Arterial</span></div><span class="row-val">${v.bpSystolic}/${v.bpDiastolic} mmHg</span></div>`;
+    if (v.temperature)                    h+=`<div class="row"><div class="row-main"><span class="row-title">Temperatura</span></div><span class="row-val">${v.temperature} °C</span></div>`;
+    if (v.heartRate)                      h+=`<div class="row"><div class="row-main"><span class="row-title">Frec. Cardiaca</span></div><span class="row-val">${v.heartRate} lpm</span></div>`;
+    if (!v.weight&&!v.bpSystolic&&!v.temperature&&!v.heartRate)
+      h+=`<div style="padding:14px 16px;color:var(--text2);font-size:15px">Sin signos registrados</div>`;
+    h+='</div>';
 
-    if (v.lat && v.lng) {
-      h += `<div class="sec-hdr">Ubicación</div>
+    // Química sanguínea
+    const hasChemistry=v.glucosaAyuno||v.glucosaPost||v.trigliceridos||v.colesterol;
+    if (hasChemistry) {
+      const ctx=v.ultimaComida?` <span style="color:var(--text2);font-size:13px">(${mealContext(v.ultimaComida)})</span>`:'';
+      h+=`<div class="sec-hdr">Química Sanguínea${ctx}</div>`;
+      h+=`<div class="chem-grid">`;
+      if (v.glucosaAyuno) h+=`<div class="chem-card"><div class="chem-lbl">Glucosa Ayuno</div><div class="chem-val ${chemClass('glucosaAyuno',v.glucosaAyuno)}">${v.glucosaAyuno}<span class="chem-unit"> mg/dL</span></div><div class="chem-ref ${chemClass('glucosaAyuno',v.glucosaAyuno)}">${chemRef('glucosaAyuno')}</div></div>`;
+      if (v.glucosaPost)  h+=`<div class="chem-card"><div class="chem-lbl">Glucosa Post.</div><div class="chem-val ${chemClass('glucosaPost',v.glucosaPost)}">${v.glucosaPost}<span class="chem-unit"> mg/dL</span></div><div class="chem-ref ${chemClass('glucosaPost',v.glucosaPost)}">${chemRef('glucosaPost')}</div></div>`;
+      if (v.trigliceridos) h+=`<div class="chem-card"><div class="chem-lbl">Triglicéridos</div><div class="chem-val ${chemClass('trigliceridos',v.trigliceridos)}">${v.trigliceridos}<span class="chem-unit"> mg/dL</span></div><div class="chem-ref ${chemClass('trigliceridos',v.trigliceridos)}">${chemRef('trigliceridos')}</div></div>`;
+      if (v.colesterol)    h+=`<div class="chem-card"><div class="chem-lbl">Colesterol</div><div class="chem-val ${chemClass('colesterol',v.colesterol)}">${v.colesterol}<span class="chem-unit"> mg/dL</span></div><div class="chem-ref ${chemClass('colesterol',v.colesterol)}">${chemRef('colesterol')}</div></div>`;
+      h+=`</div>`;
+    }
+
+    if (v.lat&&v.lng) {
+      h+=`<div class="sec-hdr">Ubicación GPS</div>
       <div class="card">
         <a class="row" href="https://maps.google.com/?q=${v.lat},${v.lng}" target="_blank" style="text-decoration:none">
           <div class="row-main">
@@ -868,12 +1017,12 @@ const A = {
     }
 
     if (v.diagnoses?.length) {
-      h += `<div class="sec-hdr">Diagnósticos</div>
+      h+=`<div class="sec-hdr">Diagnósticos</div>
       <div class="card"><div class="tags" style="padding:12px 16px">${v.diagnoses.map(d=>`<div class="tag">${esc(d)}</div>`).join('')}</div></div>`;
     }
 
     if (v.medications?.length) {
-      h += `<div class="sec-hdr">Medicamentos</div><div class="card">
+      h+=`<div class="sec-hdr">Medicamentos</div><div class="card">
         ${v.medications.map(m=>`<div class="med-row" style="padding:12px 16px">
           <div class="med-info"><div class="med-name">${esc(m.name)}</div>
           <div class="med-detail">${esc(m.dose)}${m.dose&&m.frequency?' · ':''}${esc(m.frequency)}</div></div>
@@ -882,153 +1031,328 @@ const A = {
     }
 
     if (v.notes) {
-      h += `<div class="sec-hdr">Notas</div>
+      h+=`<div class="sec-hdr">Notas</div>
       <div class="card"><div style="padding:12px 16px;font-size:15px;line-height:1.6;white-space:pre-wrap">${esc(v.notes)}</div></div>`;
     }
 
-    h += `<button class="btn btn-danger mt16" onclick="A.confirmDelVt('${p.id}','${v.id}')">Eliminar Consulta</button>
+    h+=`<button class="btn btn-danger mt16" onclick="A.confirmDelVt('${p.id}','${v.id}')">Eliminar Consulta</button>
     <div style="height:40px"></div></div>`;
 
-    document.getElementById('vdetail-body').innerHTML = h;
+    document.getElementById('vdetail-body').innerHTML=h;
   },
 
-  captureGPS() {
-    const dot = document.getElementById('gps-dot');
-    const lbl = document.getElementById('gps-label');
-    if (!navigator.geolocation) {
-      this.showAlert('No disponible','Tu dispositivo no soporta GPS.');
-      return;
-    }
-    dot.className = 'gps-dot loading';
-    lbl.textContent = 'Obteniendo ubicación...';
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        this.tLat = Math.round(pos.coords.latitude  * 100000) / 100000;
-        this.tLng = Math.round(pos.coords.longitude * 100000) / 100000;
-        dot.className = 'gps-dot ok';
-        lbl.textContent = `${this.tLat}, ${this.tLng}`;
-      },
-      err => {
-        dot.className = 'gps-dot err';
-        lbl.textContent = 'No se pudo obtener ubicación';
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
-  },
-
-  exportKML(pids = null) {
-    const pts = pids ? this.patients.filter(p => pids.includes(p.id)) : this.patients;
-    const placemarks = [];
-    pts.forEach(p => {
-      (p.visits||[]).forEach(v => {
-        if (!v.lat || !v.lng) return;
-        const diag = (v.diagnoses||[]).join(', ') || 'Sin diagnóstico';
-        const meds = (v.medications||[]).map(m=>`${m.name} ${m.dose}`).join(', ') || '';
-        placemarks.push(`    <Placemark>
-      <name>${esc(p.name)} — ${fmtDate(v.date)}</name>
-      <description><![CDATA[
-        <b>Paciente:</b> ${esc(p.name)}<br>
-        <b>Fecha:</b> ${fmtDate(v.date)}<br>
-        <b>Diagnóstico:</b> ${esc(diag)}<br>
-        ${meds ? `<b>Medicamentos:</b> ${esc(meds)}<br>` : ''}
-        ${v.notes ? `<b>Notas:</b> ${esc(v.notes)}<br>` : ''}
-      ]]></description>
-      <Point><coordinates>${v.lng},${v.lat},0</coordinates></Point>
-    </Placemark>`);
-      });
+  // ── RENDER: CHARTS (patient) ──
+  mkChart(visits,keys,opts={}) {
+    const ks=Array.isArray(keys)?keys:[keys];
+    const colors=opts.colors||['#007AFF'];
+    const unit=opts.unit||'';
+    const pts=visits.filter(v=>ks.some(k=>+v[k]>0)).sort((a,b)=>a.date.localeCompare(b.date));
+    if (pts.length<2) return '';
+    const W=300,H=106,pL=32,pR=10,pT=10,pB=22;
+    const plotW=W-pL-pR,plotH=H-pT-pB;
+    const allVals=ks.flatMap(k=>pts.map(v=>+v[k]||0).filter(x=>x>0));
+    let minY=Math.min(...allVals),maxY=Math.max(...allVals);
+    const span=maxY-minY;
+    if (span===0){minY-=2;maxY+=2;}else{minY=Math.max(0,minY-span*.15);maxY=maxY+span*.15;}
+    const ts=pts.map(v=>new Date(v.date+'T12:00:00').getTime());
+    const minT=Math.min(...ts),maxT=Math.max(...ts);
+    const cx=t=>pL+(maxT===minT?plotW/2:(t-minT)/(maxT-minT)*plotW);
+    const cy=v=>pT+plotH-(v-minY)/(maxY-minY)*plotH;
+    const fd=s=>{const[,m,d]=s.split('-');return`${+d}/${+m}`;};
+    let defs='<defs>';
+    ks.forEach((k,i)=>{defs+=`<linearGradient id="cg_${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${colors[i]}" stop-opacity=".22"/><stop offset="100%" stop-color="${colors[i]}" stop-opacity="0"/></linearGradient>`;});
+    defs+='</defs>';
+    let grid='';
+    [minY,(minY+maxY)/2,maxY].forEach(v=>{
+      const y=cy(v);
+      grid+=`<line x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" stroke="rgba(60,60,67,.1)" stroke-width=".5"/>`;
+      grid+=`<text x="${pL-3}" y="${y+3.5}" text-anchor="end" font-size="8" fill="#8E8E93">${Math.round(v)}</text>`;
     });
+    let lines='';
+    ks.forEach((k,i)=>{
+      const vp=pts.filter(v=>+v[k]>0); if (vp.length<2) return;
+      const coords=vp.map(v=>({x:cx(new Date(v.date+'T12:00:00').getTime()),y:cy(+v[k])}));
+      const poly=coords.map(c=>`${c.x},${c.y}`).join(' ');
+      const area=`M${coords[0].x},${pT+plotH} ${coords.map(c=>`L${c.x},${c.y}`).join(' ')} L${coords[coords.length-1].x},${pT+plotH}Z`;
+      lines+=`<path d="${area}" fill="url(#cg_${k})"/>`;
+      lines+=`<polyline points="${poly}" fill="none" stroke="${colors[i]}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+      coords.forEach(c=>{lines+=`<circle cx="${c.x}" cy="${c.y}" r="3" fill="${colors[i]}" stroke="#fff" stroke-width="1.5"/>`;});
+      const last=coords[coords.length-1];
+      const lastV=vp[vp.length-1][k];
+      const lx=Math.min(last.x+5,W-pR-22);
+      lines+=`<text x="${lx}" y="${last.y+4}" font-size="9" fill="${colors[i]}" font-weight="600">${lastV}${unit}</text>`;
+    });
+    const xL=`<text x="${pL}" y="${H-5}" font-size="8" fill="#8E8E93">${fd(pts[0].date)}</text>`
+             +`<text x="${W-pR}" y="${H-5}" text-anchor="end" font-size="8" fill="#8E8E93">${fd(pts[pts.length-1].date)}</text>`;
+    return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;display:block">${defs}${grid}${lines}${xL}</svg>`;
+  },
 
-    if (!placemarks.length) {
-      this.showAlert('Sin ubicaciones','No hay visitas con coordenadas registradas. Captura la ubicación GPS al registrar cada consulta.');
+  renderCharts(p) {
+    if (!p.visits||p.visits.length<2) return '';
+    const sv=[...p.visits].sort((a,b)=>a.date.localeCompare(b.date));
+    let h='';
+
+    const wPts=sv.filter(v=>+v.weight>0);
+    if (wPts.length>=2) h+=`<div class="sec-hdr">Tendencia — Peso</div><div class="card"><div class="chart-wrap">${this.mkChart(wPts,'weight',{colors:['#007AFF'],unit:'kg'})}</div></div>`;
+
+    const bpPts=sv.filter(v=>+v.bpSystolic>0&&+v.bpDiastolic>0);
+    if (bpPts.length>=2) h+=`<div class="sec-hdr">Tendencia — Presión Arterial</div><div class="card"><div class="chart-wrap">
+      ${this.mkChart(bpPts,['bpSystolic','bpDiastolic'],{colors:['#FF3B30','#FF9500']})}
+      <div class="chart-legend"><span><svg width="10" height="10"><circle cx="5" cy="5" r="4" fill="#FF3B30"/></svg>Sistólica</span><span><svg width="10" height="10"><circle cx="5" cy="5" r="4" fill="#FF9500"/></svg>Diastólica</span></div>
+    </div></div>`;
+
+    const hrPts=sv.filter(v=>+v.heartRate>0);
+    if (hrPts.length>=2) h+=`<div class="sec-hdr">Tendencia — Frec. Cardiaca</div><div class="card"><div class="chart-wrap">${this.mkChart(hrPts,'heartRate',{colors:['#FF2D55'],unit:'lpm'})}</div></div>`;
+
+    const tPts=sv.filter(v=>+v.temperature>0);
+    if (tPts.length>=2) h+=`<div class="sec-hdr">Tendencia — Temperatura</div><div class="card"><div class="chart-wrap">${this.mkChart(tPts,'temperature',{colors:['#FF9500'],unit:'°C'})}</div></div>`;
+
+    // Química sanguínea
+    const gluPts=sv.filter(v=>+v.glucosaAyuno>0);
+    if (gluPts.length>=2) h+=`<div class="sec-hdr">Tendencia — Glucosa Ayuno</div><div class="card"><div class="chart-wrap">${this.mkChart(gluPts,'glucosaAyuno',{colors:['#AF52DE'],unit:'mg/dL'})}</div></div>`;
+
+    const glupPts=sv.filter(v=>+v.glucosaPost>0);
+    if (glupPts.length>=2) h+=`<div class="sec-hdr">Tendencia — Glucosa Postprandial</div><div class="card"><div class="chart-wrap">${this.mkChart(glupPts,'glucosaPost',{colors:['#FF6B35'],unit:'mg/dL'})}</div></div>`;
+
+    const trigPts=sv.filter(v=>+v.trigliceridos>0);
+    if (trigPts.length>=2) h+=`<div class="sec-hdr">Tendencia — Triglicéridos</div><div class="card"><div class="chart-wrap">${this.mkChart(trigPts,'trigliceridos',{colors:['#5AC8FA'],unit:'mg/dL'})}</div></div>`;
+
+    const colPts=sv.filter(v=>+v.colesterol>0);
+    if (colPts.length>=2) h+=`<div class="sec-hdr">Tendencia — Colesterol</div><div class="card"><div class="chart-wrap">${this.mkChart(colPts,'colesterol',{colors:['#00C7BE'],unit:'mg/dL'})}</div></div>`;
+
+    return h;
+  },
+
+  // ── RENDER: STATISTICS MODULE ──
+  renderStats() {
+    // Compute aggregates
+    const allVisits=[];
+    this.patients.forEach(p=>(p.visits||[]).forEach(v=>allVisits.push({...v,_pt:p})));
+    const total=this.patients.length;
+    const totalV=allVisits.length;
+    const ages=this.patients.map(p=>calcAge(p.dob)).filter(a=>a!==null);
+    const avgAge=ages.length?Math.round(ages.reduce((a,b)=>a+b,0)/ages.length):null;
+    const masc=this.patients.filter(p=>p.sex==='M').length;
+    const fem=this.patients.filter(p=>p.sex==='F').length;
+
+    // This month visits
+    const nowM=today().slice(0,7);
+    const thisMonth=allVisits.filter(v=>(v.date||'').startsWith(nowM)).length;
+
+    // Top diagnoses
+    const diagCount={};
+    allVisits.forEach(v=>(v.diagnoses||[]).forEach(d=>{diagCount[d]=(diagCount[d]||0)+1;}));
+    const topDiags=Object.entries(diagCount).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const maxDiag=topDiags[0]?.[1]||1;
+
+    // Clinical averages (all visits with data)
+    const avg=(arr)=>arr.length?Math.round(arr.reduce((a,b)=>a+b,0)/arr.length):null;
+    const avgBpSys=avg(allVisits.map(v=>+v.bpSystolic).filter(x=>x>0));
+    const avgBpDia=avg(allVisits.map(v=>+v.bpDiastolic).filter(x=>x>0));
+    const avgHR=avg(allVisits.map(v=>+v.heartRate).filter(x=>x>0));
+    const avgTemp=allVisits.map(v=>+v.temperature).filter(x=>x>0);
+    const avgTemperature=avgTemp.length?(Math.round(avgTemp.reduce((a,b)=>a+b,0)/avgTemp.length*10)/10):null;
+    const avgWeight=avg(allVisits.map(v=>+v.weight).filter(x=>x>0));
+
+    // Chemistry averages
+    const avgGluAy=avg(allVisits.map(v=>+v.glucosaAyuno).filter(x=>x>0));
+    const avgGluPo=avg(allVisits.map(v=>+v.glucosaPost).filter(x=>x>0));
+    const avgTrig=avg(allVisits.map(v=>+v.trigliceridos).filter(x=>x>0));
+    const avgCol=avg(allVisits.map(v=>+v.colesterol).filter(x=>x>0));
+
+    // Procedencia: municipio + estado
+    const locCount={};
+    this.patients.forEach(p=>{
+      const key=[p.municipio,p.estado].filter(Boolean).join(', ');
+      if (key) locCount[key]=(locCount[key]||0)+1;
+    });
+    const topLocs=Object.entries(locCount).sort((a,b)=>b[1]-a[1]).slice(0,10);
+
+    // Colonias
+    const colCount={};
+    this.patients.forEach(p=>{ if (p.colonia) colCount[p.colonia]=(colCount[p.colonia]||0)+1; });
+    const topCols=Object.entries(colCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
+
+    // Visits per month (last 6)
+    const monthLabels=[], monthCounts=[];
+    for (let i=5;i>=0;i--) {
+      const d=new Date(); d.setDate(1); d.setMonth(d.getMonth()-i);
+      const key=d.toISOString().slice(0,7);
+      monthLabels.push(MO[d.getMonth()]);
+      monthCounts.push(allVisits.filter(v=>(v.date||'').startsWith(key)).length);
+    }
+    const maxMonth=Math.max(...monthCounts,1);
+
+    // Patients with chemistry data
+    const withGlu=this.patients.filter(p=>(p.visits||[]).some(v=>v.glucosaAyuno||v.glucosaPost)).length;
+
+    let h='';
+
+    if (!total) {
+      h+=`<div class="empty"><div class="empty-ico">📊</div><div class="empty-t">Sin datos aún</div><div class="empty-s">Agrega pacientes y consultas para ver estadísticas</div></div>`;
+      document.getElementById('stats-body').innerHTML=h;
       return;
     }
 
-    const kml = `<?xml version="1.0" encoding="UTF-8"?>
-<kml xmlns="http://www.opengis.net/kml/2.2">
-  <Document>
-    <name>Bitácora Médica — Visitas Domiciliarias</name>
-    <Style id="pin">
-      <IconStyle><Icon><href>http://maps.google.com/mapfiles/ms/icons/red-dot.png</href></Icon></IconStyle>
-    </Style>
-${placemarks.join('\n')}
-  </Document>
-</kml>`;
+    // ── Resumen general ──
+    h+=`<div class="sec-hdr" style="margin-top:16px">Resumen General</div>
+    <div class="stats4">
+      <div class="stat4-card"><div class="stat4-ico">👤</div><div class="stat4-val">${total}</div><div class="stat4-lbl">Pacientes</div></div>
+      <div class="stat4-card"><div class="stat4-ico">📋</div><div class="stat4-val">${totalV}</div><div class="stat4-lbl">Consultas totales</div></div>
+      <div class="stat4-card"><div class="stat4-ico">🗓</div><div class="stat4-val">${thisMonth}</div><div class="stat4-lbl">Este mes</div></div>
+      <div class="stat4-card"><div class="stat4-ico">🎂</div><div class="stat4-val">${avgAge??'—'}</div><div class="stat4-lbl">Edad promedio</div></div>
+    </div>`;
 
-    const blob = new Blob([kml], { type: 'application/vnd.google-earth.kml+xml' });
-    const fname = `visitas_${today()}.kml`;
-    const file = new File([blob], fname, { type: blob.type });
+    // ── Demografía ──
+    h+=`<div class="sec-hdr">Demografía</div>
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-lbl">Masculino</div>
+        <div class="stat-val">${masc} <span class="stat-unit">(${total?Math.round(masc/total*100):0}%)</span></div>
+        <div class="stat-sub" style="margin-top:6px;background:rgba(0,122,255,.15);border-radius:4px;height:6px;overflow:hidden">
+          <div style="height:100%;width:${total?Math.round(masc/total*100):0}%;background:var(--blue);border-radius:4px"></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl">Femenino</div>
+        <div class="stat-val">${fem} <span class="stat-unit">(${total?Math.round(fem/total*100):0}%)</span></div>
+        <div class="stat-sub" style="margin-top:6px;background:rgba(255,45,85,.1);border-radius:4px;height:6px;overflow:hidden">
+          <div style="height:100%;width:${total?Math.round(fem/total*100):0}%;background:#FF2D55;border-radius:4px"></div>
+        </div>
+      </div>
+    </div>`;
 
-    if (navigator.canShare && navigator.canShare({ files:[file] })) {
-      navigator.share({ files:[file], title: fname }).catch(() => this._downloadBlob(blob, fname));
-    } else {
-      this._downloadBlob(blob, fname);
+    // ── Consultas por mes ──
+    h+=`<div class="sec-hdr">Consultas por Mes (Últimos 6 meses)</div>
+    <div class="card">
+      <div class="bar-chart">
+        ${monthLabels.map((lbl,i)=>`
+          <div class="bar-col">
+            <div class="bar-val">${monthCounts[i]||''}</div>
+            <div class="bar-fill" style="height:${Math.round(monthCounts[i]/maxMonth*50)}px;background:${monthCounts[i]?'var(--blue)':'rgba(118,118,128,.2)'}"></div>
+            <div class="bar-lbl">${lbl}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+    // ── Signos vitales promedio ──
+    h+=`<div class="sec-hdr">Promedios Clínicos</div>
+    <div class="stats">
+      <div class="stat-card"><div class="stat-lbl">Peso promedio</div><div class="stat-val">${avgWeight??'—'}<span class="stat-unit"> kg</span></div></div>
+      <div class="stat-card"><div class="stat-lbl">P. Arterial prom.</div><div class="stat-val" style="font-size:18px">${avgBpSys??'—'}/${avgBpDia??'—'}</div></div>
+      <div class="stat-card"><div class="stat-lbl">F. Cardiaca prom.</div><div class="stat-val">${avgHR??'—'}<span class="stat-unit"> lpm</span></div></div>
+      <div class="stat-card"><div class="stat-lbl">Temperatura prom.</div><div class="stat-val">${avgTemperature??'—'}<span class="stat-unit"> °C</span></div></div>
+    </div>`;
+
+    // ── Química sanguínea promedio ──
+    h+=`<div class="sec-hdr">Química Sanguínea Promedio <span style="font-weight:400;font-size:12px;color:var(--text2)">(${withGlu} pac. con datos)</span></div>
+    <div class="chem-grid">
+      <div class="chem-card"><div class="chem-lbl">Glucosa Ayuno</div><div class="chem-val ${chemClass('glucosaAyuno',avgGluAy)}">${avgGluAy??'—'}<span class="chem-unit"> mg/dL</span></div><div class="chem-ref">${chemRef('glucosaAyuno')}</div></div>
+      <div class="chem-card"><div class="chem-lbl">Glucosa Post.</div><div class="chem-val ${chemClass('glucosaPost',avgGluPo)}">${avgGluPo??'—'}<span class="chem-unit"> mg/dL</span></div><div class="chem-ref">${chemRef('glucosaPost')}</div></div>
+      <div class="chem-card"><div class="chem-lbl">Triglicéridos</div><div class="chem-val ${chemClass('trigliceridos',avgTrig)}">${avgTrig??'—'}<span class="chem-unit"> mg/dL</span></div><div class="chem-ref">${chemRef('trigliceridos')}</div></div>
+      <div class="chem-card"><div class="chem-lbl">Colesterol</div><div class="chem-val ${chemClass('colesterol',avgCol)}">${avgCol??'—'}<span class="chem-unit"> mg/dL</span></div><div class="chem-ref">${chemRef('colesterol')}</div></div>
+    </div>`;
+
+    // ── Top diagnósticos ──
+    if (topDiags.length) {
+      h+=`<div class="sec-hdr">Top Diagnósticos</div><div class="card">
+        ${topDiags.map(([name,cnt])=>`<div class="diag-row">
+          <div class="diag-name">${esc(name)}</div>
+          <div class="diag-bar-bg"><div class="diag-bar-fill" style="width:${Math.round(cnt/maxDiag*100)}%"></div></div>
+          <div class="diag-count">${cnt}</div>
+        </div>`).join('')}
+      </div>`;
     }
+
+    // ── Procedencia por municipio ──
+    if (topLocs.length) {
+      h+=`<div class="sec-hdr">Procedencia — Municipio / Estado</div><div class="card">
+        ${topLocs.map(([name,cnt])=>`<div class="loc-row">
+          <div class="loc-name">📍 ${esc(name)}</div>
+          <div class="loc-count">${cnt}</div>
+        </div>`).join('')}
+      </div>`;
+    }
+
+    // ── Colonias ──
+    if (topCols.length) {
+      h+=`<div class="sec-hdr">Procedencia — Colonia / Fracc.</div><div class="card">
+        ${topCols.map(([name,cnt])=>`<div class="loc-row">
+          <div class="loc-name">🏘 ${esc(name)}</div>
+          <div class="loc-count">${cnt}</div>
+        </div>`).join('')}
+      </div>`;
+    }
+
+    h+='<div style="height:32px"></div>';
+    document.getElementById('stats-body').innerHTML=h;
   },
 
-  _downloadBlob(blob, filename) {
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-  },
-
-  editVisit() {
-    const p = this.pt(this.pid);
-    const v = p?.visits.find(v => v.id === this.vid);
-    if (v) this.go('vform', {vt: v});
+  // ── GPS ──
+  captureGPS() {
+    const dot=document.getElementById('gps-dot');
+    const lbl=document.getElementById('gps-label');
+    if (!navigator.geolocation) { this.showAlert('No disponible','Tu dispositivo no soporta GPS.'); return; }
+    dot.className='gps-dot loading'; lbl.textContent='Obteniendo ubicación...';
+    navigator.geolocation.getCurrentPosition(
+      pos=>{
+        this.tLat=Math.round(pos.coords.latitude*100000)/100000;
+        this.tLng=Math.round(pos.coords.longitude*100000)/100000;
+        dot.className='gps-dot ok'; lbl.textContent=`${this.tLat}, ${this.tLng}`;
+      },
+      ()=>{ dot.className='gps-dot err'; lbl.textContent='No se pudo obtener ubicación'; },
+      {enableHighAccuracy:true,timeout:10000}
+    );
   },
 
   // ── MENUS ──
   globalMenu() {
-    this._sActs = [
-      { label:'Exportar todo a Excel', fn: () => this.exportAll() },
-      { label:'Exportar por período', fn: () => this.periodMenu() },
-      { label:'Exportar mapa KML (INEGI)', fn: () => this.exportKML() },
-      { label:'Eliminar todos los pacientes', dest:true, fn: () => this.confirmDelAll() },
+    this._sActs=[
+      {label:'Estadísticas', fn:()=>this.go('stats')},
+      {label:'Exportar todo a Excel', fn:()=>this.exportAll()},
+      {label:'Exportar por período', fn:()=>this.periodMenu()},
+      {label:'Exportar mapa KML (INEGI)', fn:()=>this.exportKML()},
+      {label:'Eliminar todos los pacientes', dest:true, fn:()=>this.confirmDelAll()},
     ];
     this.renderSheet(this._sActs);
   },
 
   periodMenu() {
-    const now = new Date();
-    const fmt = d => d.toISOString().slice(0,10);
-    const monday = new Date(now); monday.setDate(now.getDate() - ((now.getDay()+6)%7));
-    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-
-    this._sActs = [
-      { label:'Hoy',              fn: () => this.exportRange(fmt(now), fmt(now)) },
-      { label:'Esta semana',      fn: () => this.exportRange(fmt(monday), fmt(now)) },
-      { label:'Este mes',         fn: () => this.exportRange(fmt(firstDay), fmt(now)) },
-      { label:'Rango personalizado', fn: () => this.showRangeSheet() },
+    const now=new Date(), fmt=d=>d.toISOString().slice(0,10);
+    const monday=new Date(now); monday.setDate(now.getDate()-((now.getDay()+6)%7));
+    const firstDay=new Date(now.getFullYear(),now.getMonth(),1);
+    this._sActs=[
+      {label:'Hoy',fn:()=>this.exportRange(fmt(now),fmt(now))},
+      {label:'Esta semana',fn:()=>this.exportRange(fmt(monday),fmt(now))},
+      {label:'Este mes',fn:()=>this.exportRange(fmt(firstDay),fmt(now))},
+      {label:'Rango personalizado',fn:()=>this.showRangeSheet()},
     ];
     this.renderSheet(this._sActs);
   },
 
   showRangeSheet() {
-    const now = today();
-    document.getElementById('rs-from').value = now;
-    document.getElementById('rs-to').value = now;
+    const now=today();
+    document.getElementById('rs-from').value=now;
+    document.getElementById('rs-to').value=now;
     document.getElementById('range-sheet').classList.add('show');
     document.getElementById('sheet-bg').classList.add('show');
   },
 
-  exportRange(from, to) {
-    if (!from || !to) { this.showAlert('Fechas requeridas','Selecciona las fechas de inicio y fin.'); return; }
+  exportRange(from,to) {
+    if (!from||!to) { this.showAlert('Fechas requeridas','Selecciona las fechas de inicio y fin.'); return; }
     if (!window.XLSX) { this.showAlert('Sin conexión','Necesitas internet la primera vez para exportar.'); return; }
-    if (from > to) { this.showAlert('Rango inválido','La fecha de inicio debe ser antes que la fecha de fin.'); return; }
-
-    // Recopilar todas las consultas del rango de todos los pacientes
-    const rows = [];
-    this.patients.forEach(p => {
-      (p.visits||[]).forEach(v => {
-        if (v.date >= from && v.date <= to) {
+    if (from>to) { this.showAlert('Rango inválido','La fecha de inicio debe ser antes que la fecha de fin.'); return; }
+    const rows=[];
+    this.patients.forEach(p=>{
+      (p.visits||[]).forEach(v=>{
+        if (v.date>=from&&v.date<=to) {
           rows.push([
-            v.date, p.name,
-            calcAge(p.dob)!=null ? calcAge(p.dob) : '',
-            p.sex==='M'?'Masculino':p.sex==='F'?'Femenino':'',
+            v.date, p.name, calcAge(p.dob)??'', p.sex==='M'?'Masculino':p.sex==='F'?'Femenino':'',
+            p.estado||'', p.municipio||'', p.colonia||'',
             v.weight||'', v.bpSystolic||'', v.bpDiastolic||'',
             v.temperature||'', v.heartRate||'',
+            v.ultimaComida||'', v.glucosaAyuno||'', v.glucosaPost||'',
+            v.trigliceridos||'', v.colesterol||'',
             (v.diagnoses||[]).join(', '),
             (v.medications||[]).map(m=>`${m.name} ${m.dose} ${m.frequency}`).join('; '),
             v.notes||'',
@@ -1036,105 +1360,78 @@ ${placemarks.join('\n')}
         }
       });
     });
-
-    // Ordenar por fecha
-    rows.sort((a,b) => a[0].localeCompare(b[0]));
-
-    if (!rows.length) {
-      this.showAlert('Sin resultados',`No hay consultas registradas entre ${fmtDate(from)} y ${fmtDate(to)}.`);
-      return;
-    }
-
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
-      ['Fecha','Paciente','Edad','Sexo','Peso kg','PA Sys','PA Dia','Temp °C','FC lpm','Diagnósticos','Medicamentos','Notas'],
+    rows.sort((a,b)=>a[0].localeCompare(b[0]));
+    if (!rows.length) { this.showAlert('Sin resultados',`No hay consultas entre ${fmtDate(from)} y ${fmtDate(to)}.`); return; }
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
+      ['Fecha','Paciente','Edad','Sexo','Estado','Municipio','Colonia',
+       'Peso kg','PA Sys','PA Dia','Temp °C','FC lpm',
+       'Últ. Alimento','Glucosa Ayuno','Glucosa Post','Triglicéridos','Colesterol',
+       'Diagnósticos','Medicamentos','Notas'],
       ...rows
-    ]), 'Consultas');
-
-    const fname = from === to
-      ? `consultas_${from}.xlsx`
-      : `consultas_${from}_al_${to}.xlsx`;
-
-    // Cerrar range sheet si estaba abierto
+    ]),'Consultas');
+    const fname=from===to?`consultas_${from}.xlsx`:`consultas_${from}_al_${to}.xlsx`;
     document.getElementById('range-sheet').classList.remove('show');
     document.getElementById('sheet-bg').classList.remove('show');
-
-    this._shareOrDownload(wb, fname);
+    this._shareOrDownload(wb,fname);
   },
 
   confirmDelAll() {
     if (!this.patients.length) { this.showAlert('Sin pacientes','No hay pacientes registrados.'); return; }
-    this.showAlert(
-      'Eliminar todos',
-      `¿Eliminar los ${this.patients.length} paciente${this.patients.length!==1?'s':''} y todo su historial? Esta acción no se puede deshacer.`,
-      [
-        {label:'Cancelar', bold:true},
-        {label:'Eliminar todo', dest:true, fn:() => {
-          this.patients = [];
-          this.persist();
-          this.renderList();
-        }}
-      ]
-    );
+    this.showAlert('Eliminar todos',`¿Eliminar los ${this.patients.length} paciente${this.patients.length!==1?'s':''} y todo su historial? Esta acción no se puede deshacer.`,[
+      {label:'Cancelar',bold:true},
+      {label:'Eliminar todo',dest:true,fn:()=>{this.patients=[];this.persist();this.renderList();}}
+    ]);
   },
 
   patientMenu() {
-    this._sActs = [
-      { label:'Editar Paciente', fn: () => { const p=this.pt(this.pid); this.go('pform',{pt:p}); } },
-      { label:'Exportar a Excel', fn: () => this.exportPt(this.pid) },
-      { label:'Exportar mapa KML (INEGI)', fn: () => this.exportKML([this.pid]) },
-      { label:'Eliminar Paciente', dest:true, fn: () => this.confirmDelPt(this.pid) },
+    this._sActs=[
+      {label:'Editar Paciente',fn:()=>{const p=this.pt(this.pid);this.go('pform',{pt:p});}},
+      {label:'Exportar a Excel',fn:()=>this.exportPt(this.pid)},
+      {label:'Exportar mapa KML (INEGI)',fn:()=>this.exportKML([this.pid])},
+      {label:'Eliminar Paciente',dest:true,fn:()=>this.confirmDelPt(this.pid)},
     ];
     this.renderSheet(this._sActs);
   },
 
   renderSheet(acts) {
-    document.getElementById('asheet-grp').innerHTML = acts.map((a,i) =>
+    document.getElementById('asheet-grp').innerHTML=acts.map((a,i)=>
       `<button class="asheet-btn ${a.dest?'dest':''}" onclick="A.runSheet(${i})">${esc(a.label)}</button>`
     ).join('');
     document.getElementById('asheet').classList.add('show');
     document.getElementById('sheet-bg').classList.add('show');
   },
 
-  runSheet(i) {
-    const action = this._sActs[i];
-    this.closeSheet();
-    if (action?.fn) action.fn();
-  },
+  runSheet(i) { const action=this._sActs[i]; this.closeSheet(); if (action?.fn) action.fn(); },
 
   closeSheet() {
-    ['asheet','med-sheet','range-sheet'].forEach(id => document.getElementById(id)?.classList.remove('show'));
+    ['asheet','med-sheet','range-sheet'].forEach(id=>document.getElementById(id)?.classList.remove('show'));
     document.getElementById('sheet-bg').classList.remove('show');
   },
 
-  // ── MODAL ──
-  showAlert(t, m, acts=null) {
-    document.getElementById('modal-t').textContent = t;
-    document.getElementById('modal-m').textContent = m||'';
-    this._mActs = acts || [{label:'OK'}];
-    document.getElementById('modal-acts').innerHTML = this._mActs.map((a,i) =>
+  showAlert(t,m,acts=null) {
+    document.getElementById('modal-t').textContent=t;
+    document.getElementById('modal-m').textContent=m||'';
+    this._mActs=acts||[{label:'OK'}];
+    document.getElementById('modal-acts').innerHTML=this._mActs.map((a,i)=>
       `<button class="alert-btn ${a.dest?'dest':''} ${a.bold?'bold':''}" onclick="A.runModal(${i})">${esc(a.label)}</button>`
     ).join('');
     document.getElementById('modal-bg').classList.add('show');
   },
 
-  runModal(i) {
-    this.closeModal();
-    this._mActs[i]?.fn?.();
-  },
-
+  runModal(i) { this.closeModal(); this._mActs[i]?.fn?.(); },
   closeModal() { document.getElementById('modal-bg').classList.remove('show'); },
 
   confirmDelPt(id) {
-    const p = this.pt(id);
-    this.showAlert('Eliminar Paciente', `¿Eliminar a "${p?.name}"? No se puede deshacer.`, [
-      {label:'Cancelar', bold:true},
-      {label:'Eliminar', dest:true, fn:() => {
+    const p=this.pt(id);
+    this.showAlert('Eliminar Paciente',`¿Eliminar a "${p?.name}"? No se puede deshacer.`,[
+      {label:'Cancelar',bold:true},
+      {label:'Eliminar',dest:true,fn:()=>{
         this.delPt(id);
-        while (this.stack.length > 1) {
-          const cur = this.stack.pop();
-          const el = document.getElementById(`s-${cur}`);
-          if (el) { el.classList.remove('active','prev'); el.style.transform=''; }
+        while (this.stack.length>1) {
+          const cur=this.stack.pop();
+          const el=document.getElementById(`s-${cur}`);
+          if (el){el.classList.remove('active','prev');el.style.transform='';}
         }
         document.getElementById('s-patients')?.classList.remove('prev');
         this.renderList();
@@ -1142,222 +1439,146 @@ ${placemarks.join('\n')}
     ]);
   },
 
-  confirmDelVt(pid, vid) {
-    this.showAlert('Eliminar Consulta', '¿Eliminar esta consulta? No se puede deshacer.', [
-      {label:'Cancelar', bold:true},
-      {label:'Eliminar', dest:true, fn:() => {
-        this.delVt(pid, vid);
-        this.back();
-        this.renderPDetail();
-      }}
+  confirmDelVt(pid,vid) {
+    this.showAlert('Eliminar Consulta','¿Eliminar esta consulta? No se puede deshacer.',[
+      {label:'Cancelar',bold:true},
+      {label:'Eliminar',dest:true,fn:()=>{this.delVt(pid,vid);this.back();this.renderPDetail();}}
     ]);
   },
 
-  // ── EXPORT ──
-  _shareOrDownload(wb, filename) {
-    const buf = XLSX.write(wb, { bookType:'xlsx', type:'array' });
-    const blob = new Blob([buf], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const file = new File([blob], filename, { type: blob.type });
-
-    if (navigator.canShare && navigator.canShare({ files:[file] })) {
-      navigator.share({ files:[file], title: filename }).catch(() => this._download(blob, filename));
-    } else {
-      this._download(blob, filename);
-    }
+  editVisit() {
+    const p=this.pt(this.pid);
+    const v=p?.visits.find(v=>v.id===this.vid);
+    if (v) this.go('vform',{vt:v});
   },
 
-  _download(blob, filename) {
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  // ── EXPORT ──
+  _shareOrDownload(wb,filename) {
+    const buf=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+    const blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const file=new File([blob],filename,{type:blob.type});
+    if (navigator.canShare&&navigator.canShare({files:[file]})) {
+      navigator.share({files:[file],title:filename}).catch(()=>this._download(blob,filename));
+    } else { this._download(blob,filename); }
+  },
+
+  _download(blob,filename) {
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob); a.download=filename; a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),2000);
   },
 
   exportPt(id) {
-    const p = this.pt(id);
-    if (!p || !window.XLSX) { this.showAlert('Sin conexión','Necesitas internet la primera vez para exportar.'); return; }
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+    const p=this.pt(id);
+    if (!p||!window.XLSX) { this.showAlert('Sin conexión','Necesitas internet la primera vez para exportar.'); return; }
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
       ['Campo','Valor'],
-      ['Nombre', p.name], ['Fecha nac.', p.dob], ['Edad', calcAge(p.dob)!=null?calcAge(p.dob)+' años':''],
-      ['Sexo', p.sex==='M'?'Masculino':'Femenino'], ['Peso (kg)', p.weight], ['Talla (cm)', p.height],
-      ['IMC', calcBMI(p.weight,p.height)], ['Diagnósticos', (p.diagnoses||[]).join(', ')],
-      ['Medicamentos', (p.medications||[]).map(m=>`${m.name} ${m.dose} ${m.frequency}`).join('; ')],
-      ['Notas', p.notes],
-    ]), 'Paciente');
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
-      ['Fecha','Peso kg','PA Sys','PA Dia','Temp °C','FC lpm','Diagnósticos','Medicamentos','Notas'],
-      ...(p.visits||[]).map(v => [
+      ['Nombre',p.name],['Fecha nac.',p.dob],['Edad',calcAge(p.dob)!=null?calcAge(p.dob)+' años':''],
+      ['Sexo',p.sex==='M'?'Masculino':'Femenino'],['Peso (kg)',p.weight],['Talla (cm)',p.height],
+      ['IMC',calcBMI(p.weight,p.height)],
+      ['Estado',p.estado||''],['Municipio',p.municipio||''],['Colonia',p.colonia||''],
+      ['Fraccionamiento',p.fracc||''],['Calle',p.calle||''],['Núm.',p.numExt||''],
+      ['Diagnósticos',(p.diagnoses||[]).join(', ')],
+      ['Medicamentos',(p.medications||[]).map(m=>`${m.name} ${m.dose} ${m.frequency}`).join('; ')],
+      ['Notas',p.notes],
+    ]),'Paciente');
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
+      ['Fecha','Peso kg','PA Sys','PA Dia','Temp °C','FC lpm',
+       'Últ. Alimento','Glucosa Ayuno','Glucosa Post','Triglicéridos','Colesterol',
+       'Diagnósticos','Medicamentos','Notas'],
+      ...(p.visits||[]).map(v=>[
         v.date, v.weight||'', v.bpSystolic||'', v.bpDiastolic||'',
         v.temperature||'', v.heartRate||'',
+        v.ultimaComida||'', v.glucosaAyuno||'', v.glucosaPost||'',
+        v.trigliceridos||'', v.colesterol||'',
         (v.diagnoses||[]).join(', '),
         (v.medications||[]).map(m=>`${m.name} ${m.dose} ${m.frequency}`).join('; '),
         v.notes||'',
       ])
-    ]), 'Consultas');
-    this._shareOrDownload(wb, `${p.name.replace(/\s+/g,'_')}_bitacora.xlsx`);
+    ]),'Consultas');
+    this._shareOrDownload(wb,`${p.name.replace(/\s+/g,'_')}_bitacora.xlsx`);
   },
 
   exportAll() {
     if (!window.XLSX) { this.showAlert('Sin conexión','Necesitas internet la primera vez para exportar.'); return; }
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
-      ['Nombre','Fecha Nac.','Edad','Sexo','Peso','Talla','IMC','Diagnósticos','Consultas'],
-      ...this.patients.map(p => [
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
+      ['Nombre','Fecha Nac.','Edad','Sexo','Estado','Municipio','Colonia','Peso','Talla','IMC','Diagnósticos','Consultas'],
+      ...this.patients.map(p=>[
         p.name, p.dob, calcAge(p.dob), p.sex==='M'?'Masculino':'Femenino',
+        p.estado||'', p.municipio||'', p.colonia||'',
         p.weight, p.height, calcBMI(p.weight,p.height),
         (p.diagnoses||[]).join(', '), (p.visits||[]).length,
       ])
-    ]), 'Pacientes');
-    this.patients.forEach(p => {
+    ]),'Pacientes');
+    this.patients.forEach(p=>{
       if (!p.visits?.length) return;
-      const name = p.name.slice(0,28).replace(/[\\\/\?\*\[\]:]/g,'');
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
-        ['Fecha','Peso','PA Sys','PA Dia','Temp','FC','Diagnósticos','Medicamentos','Notas'],
-        ...p.visits.map(v => [
+      const name=p.name.slice(0,28).replace(/[\\\/\?\*\[\]:]/g,'');
+      XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
+        ['Fecha','Peso','PA Sys','PA Dia','Temp','FC',
+         'Últ. Alimento','Glu. Ayuno','Glu. Post','Triglicéridos','Colesterol',
+         'Diagnósticos','Medicamentos','Notas'],
+        ...p.visits.map(v=>[
           v.date, v.weight||'', v.bpSystolic||'', v.bpDiastolic||'',
           v.temperature||'', v.heartRate||'',
+          v.ultimaComida||'', v.glucosaAyuno||'', v.glucosaPost||'',
+          v.trigliceridos||'', v.colesterol||'',
           (v.diagnoses||[]).join(', '),
           (v.medications||[]).map(m=>`${m.name} ${m.dose}`).join('; '),
           v.notes||'',
         ])
-      ]), name);
+      ]),name);
     });
-    this._shareOrDownload(wb, `bitacora_${today()}.xlsx`);
+    this._shareOrDownload(wb,`bitacora_${today()}.xlsx`);
   },
 
-  // ── CHARTS ──
-  mkChart(visits, keys, opts = {}) {
-    const ks = Array.isArray(keys) ? keys : [keys];
-    const colors = opts.colors || ['#007AFF'];
-    const unit = opts.unit || '';
-
-    // Filtrar visitas con dato válido y ordenar por fecha
-    const pts = visits
-      .filter(v => ks.some(k => +v[k] > 0))
-      .sort((a, b) => a.date.localeCompare(b.date));
-    if (pts.length < 2) return '';
-
-    const W = 300, H = 106, pL = 32, pR = 10, pT = 10, pB = 22;
-    const plotW = W - pL - pR, plotH = H - pT - pB;
-
-    const allVals = ks.flatMap(k => pts.map(v => +v[k] || 0).filter(x => x > 0));
-    let minY = Math.min(...allVals), maxY = Math.max(...allVals);
-    const span = maxY - minY;
-    if (span === 0) { minY -= 2; maxY += 2; }
-    else { minY = Math.max(0, minY - span * 0.15); maxY = maxY + span * 0.15; }
-
-    const ts = pts.map(v => new Date(v.date + 'T12:00:00').getTime());
-    const minT = Math.min(...ts), maxT = Math.max(...ts);
-
-    const cx = t  => pL + (maxT === minT ? plotW / 2 : (t - minT) / (maxT - minT) * plotW);
-    const cy = v  => pT + plotH - (v - minY) / (maxY - minY) * plotH;
-    const fd = s  => { const [,m,d] = s.split('-'); return `${+d}/${+m}`; };
-
-    // Gradients
-    let defs = '<defs>';
-    ks.forEach((k, i) => {
-      defs += `<linearGradient id="cg_${k}" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="${colors[i]}" stop-opacity=".22"/>
-        <stop offset="100%" stop-color="${colors[i]}" stop-opacity="0"/>
-      </linearGradient>`;
-    });
-    defs += '</defs>';
-
-    // Grid horizontal (3 líneas)
-    let grid = '';
-    [minY, (minY + maxY) / 2, maxY].forEach(v => {
-      const y = cy(v);
-      grid += `<line x1="${pL}" y1="${y}" x2="${W - pR}" y2="${y}" stroke="rgba(60,60,67,.1)" stroke-width=".5"/>`;
-      grid += `<text x="${pL - 3}" y="${y + 3.5}" text-anchor="end" font-size="8" fill="#8E8E93">${Math.round(v)}</text>`;
-    });
-
-    // Líneas y puntos por cada key
-    let lines = '';
-    ks.forEach((k, i) => {
-      const vp = pts.filter(v => +v[k] > 0);
-      if (vp.length < 2) return;
-      const coords = vp.map(v => ({ x: cx(new Date(v.date + 'T12:00:00').getTime()), y: cy(+v[k]) }));
-      const poly = coords.map(c => `${c.x},${c.y}`).join(' ');
-      const area = `M${coords[0].x},${pT + plotH} ${coords.map(c => `L${c.x},${c.y}`).join(' ')} L${coords[coords.length-1].x},${pT + plotH}Z`;
-      lines += `<path d="${area}" fill="url(#cg_${k})"/>`;
-      lines += `<polyline points="${poly}" fill="none" stroke="${colors[i]}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
-      coords.forEach(c => {
-        lines += `<circle cx="${c.x}" cy="${c.y}" r="3" fill="${colors[i]}" stroke="#fff" stroke-width="1.5"/>`;
+  exportKML(pids=null) {
+    const pts=pids?this.patients.filter(p=>pids.includes(p.id)):this.patients;
+    const placemarks=[];
+    pts.forEach(p=>{
+      (p.visits||[]).forEach(v=>{
+        if (!v.lat||!v.lng) return;
+        const diag=(v.diagnoses||[]).join(', ')||'Sin diagnóstico';
+        const meds=(v.medications||[]).map(m=>`${m.name} ${m.dose}`).join(', ')||'';
+        placemarks.push(`    <Placemark>
+      <name>${esc(p.name)} — ${fmtDate(v.date)}</name>
+      <description><![CDATA[
+        <b>Paciente:</b> ${esc(p.name)}<br>
+        <b>Fecha:</b> ${fmtDate(v.date)}<br>
+        <b>Diagnóstico:</b> ${esc(diag)}<br>
+        ${meds?`<b>Medicamentos:</b> ${esc(meds)}<br>`:''}
+        ${v.notes?`<b>Notas:</b> ${esc(v.notes)}<br>`:''}
+      ]]></description>
+      <Point><coordinates>${v.lng},${v.lat},0</coordinates></Point>
+    </Placemark>`);
       });
-      // Etiqueta del último valor
-      const last = coords[coords.length - 1];
-      const lastV = vp[vp.length - 1][k];
-      const lx = Math.min(last.x + 5, W - pR - 22);
-      lines += `<text x="${lx}" y="${last.y + 4}" font-size="9" fill="${colors[i]}" font-weight="600">${lastV}${unit}</text>`;
     });
-
-    // Etiquetas X (primera y última fecha)
-    const xL = `<text x="${pL}" y="${H - 5}" font-size="8" fill="#8E8E93">${fd(pts[0].date)}</text>`
-             + `<text x="${W - pR}" y="${H - 5}" text-anchor="end" font-size="8" fill="#8E8E93">${fd(pts[pts.length-1].date)}</text>`;
-
-    return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;display:block">${defs}${grid}${lines}${xL}</svg>`;
+    if (!placemarks.length) { this.showAlert('Sin ubicaciones','No hay visitas con coordenadas registradas.'); return; }
+    const kml=`<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Bitácora Médica — Visitas Domiciliarias</name>
+    <Style id="pin"><IconStyle><Icon><href>http://maps.google.com/mapfiles/ms/icons/red-dot.png</href></Icon></IconStyle></Style>
+${placemarks.join('\n')}
+  </Document>
+</kml>`;
+    const blob=new Blob([kml],{type:'application/vnd.google-earth.kml+xml'});
+    const fname=`visitas_${today()}.kml`;
+    const file=new File([blob],fname,{type:blob.type});
+    if (navigator.canShare&&navigator.canShare({files:[file]})) {
+      navigator.share({files:[file],title:fname}).catch(()=>this._download(blob,fname));
+    } else { this._download(blob,fname); }
   },
 
-  renderCharts(p) {
-    if (!p.visits || p.visits.length < 2) return '';
-    const sv = [...p.visits].sort((a, b) => a.date.localeCompare(b.date));
-    let h = '';
-
-    // Peso
-    const wPts = sv.filter(v => +v.weight > 0);
-    if (wPts.length >= 2) {
-      h += `<div class="sec-hdr">Tendencia — Peso</div>
-      <div class="card"><div class="chart-wrap">
-        ${this.mkChart(wPts, 'weight', { colors: ['#007AFF'], unit: 'kg' })}
-      </div></div>`;
-    }
-
-    // Presión arterial
-    const bpPts = sv.filter(v => +v.bpSystolic > 0 && +v.bpDiastolic > 0);
-    if (bpPts.length >= 2) {
-      h += `<div class="sec-hdr">Tendencia — Presión Arterial</div>
-      <div class="card"><div class="chart-wrap">
-        ${this.mkChart(bpPts, ['bpSystolic','bpDiastolic'], { colors: ['#FF3B30','#FF9500'] })}
-        <div class="chart-legend">
-          <span><svg width="10" height="10"><circle cx="5" cy="5" r="4" fill="#FF3B30"/></svg>Sistólica</span>
-          <span><svg width="10" height="10"><circle cx="5" cy="5" r="4" fill="#FF9500"/></svg>Diastólica</span>
-        </div>
-      </div></div>`;
-    }
-
-    // Frecuencia cardiaca
-    const hrPts = sv.filter(v => +v.heartRate > 0);
-    if (hrPts.length >= 2) {
-      h += `<div class="sec-hdr">Tendencia — Frec. Cardiaca</div>
-      <div class="card"><div class="chart-wrap">
-        ${this.mkChart(hrPts, 'heartRate', { colors: ['#FF2D55'], unit: 'lpm' })}
-      </div></div>`;
-    }
-
-    // Temperatura
-    const tPts = sv.filter(v => +v.temperature > 0);
-    if (tPts.length >= 2) {
-      h += `<div class="sec-hdr">Tendencia — Temperatura</div>
-      <div class="card"><div class="chart-wrap">
-        ${this.mkChart(tPts, 'temperature', { colors: ['#FF9500'], unit: '°C' })}
-      </div></div>`;
-    }
-
-    return h;
-  },
-
-  // ── INIT ──
   init() {
     this.load();
     this.renderList();
-    if ('serviceWorker' in navigator)
-      navigator.serviceWorker.register('sw.js').catch(()=>{});
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
   }
 };
 
-document.addEventListener('DOMContentLoaded', () => A.init());
+document.addEventListener('DOMContentLoaded',()=>A.init());
 </script>
 </body>
 </html>
