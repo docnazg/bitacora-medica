@@ -593,15 +593,18 @@ const A = {
       <div class="form-hdr">Domicilio / Procedencia</div>
       <div class="card">
         <div class="frow"><span class="flabel">Estado</span>
-          <input class="finput left" id="pf-estado" placeholder="ej. Sinaloa" value="${esc(p?.estado||'')}"></div>
+          <input class="finput left" id="pf-estado" placeholder="ej. Durango" value="${esc(p?.estado||'Durango')}"></div>
         <div class="frow"><span class="flabel">Municipio</span>
-          <input class="finput left" id="pf-municipio" placeholder="ej. Mazatlán" value="${esc(p?.municipio||'')}"></div>
+          <input class="finput left" id="pf-municipio" placeholder="ej. Canatlán" value="${esc(p?.municipio||'Canatlán')}"></div>
         <div class="frow"><span class="flabel">Colonia</span>
-          <input class="finput left" id="pf-colonia" placeholder="ej. Centro" value="${esc(p?.colonia||'')}"></div>
+          <input class="finput left" id="pf-colonia" list="dl-colonia" placeholder="ej. Centro" value="${esc(p?.colonia||'')}">
+          <datalist id="dl-colonia">${this.addrSuggestions('colonia').map(v=>`<option value="${esc(v)}">`).join('')}</datalist></div>
         <div class="frow"><span class="flabel">Fraccionamiento</span>
-          <input class="finput left" id="pf-fracc" placeholder="Opcional" value="${esc(p?.fracc||'')}"></div>
+          <input class="finput left" id="pf-fracc" list="dl-fracc" placeholder="Opcional" value="${esc(p?.fracc||'')}">
+          <datalist id="dl-fracc">${this.addrSuggestions('fracc').map(v=>`<option value="${esc(v)}">`).join('')}</datalist></div>
         <div class="frow"><span class="flabel">Calle</span>
-          <input class="finput left" id="pf-calle" placeholder="ej. Av. Del Mar" value="${esc(p?.calle||'')}"></div>
+          <input class="finput left" id="pf-calle" list="dl-calle" placeholder="ej. Av. Del Mar" value="${esc(p?.calle||'')}">
+          <datalist id="dl-calle">${this.addrSuggestions('calle').map(v=>`<option value="${esc(v)}">`).join('')}</datalist></div>
         <div class="frow"><span class="flabel">Núm. Ext/Int</span>
           <input class="finput" id="pf-num" placeholder="123 / A" value="${esc(p?.numExt||'')}"></div>
       </div>
@@ -706,6 +709,24 @@ const A = {
     document.getElementById(`${this.msTarget}-meds`).innerHTML=this.medsHtml(this.tMeds,this.msTarget);
   },
 
+  // ── ADDRESS SUGGESTIONS (localStorage) ──
+  addrSuggestions(field) {
+    try { return JSON.parse(localStorage.getItem(`bm-addr-${field}`)||'[]'); }
+    catch { return []; }
+  },
+
+  saveAddrSuggestion(field, value) {
+    if (!value) return;
+    try {
+      const key=`bm-addr-${field}`;
+      const arr=JSON.parse(localStorage.getItem(key)||'[]');
+      if (!arr.includes(value)) {
+        arr.unshift(value);
+        localStorage.setItem(key, JSON.stringify(arr.slice(0,30)));
+      }
+    } catch {}
+  },
+
   savePForm() {
     const name=document.getElementById('pf-name')?.value.trim();
     if (!name) { this.showAlert('Nombre requerido','Ingresa el nombre del paciente.'); return; }
@@ -719,6 +740,9 @@ const A = {
       calle:     document.getElementById('pf-calle')?.value.trim()||'',
       numExt:    document.getElementById('pf-num')?.value.trim()||'',
     };
+
+    // Save suggestions for autocomplete
+    ['colonia','fracc','calle'].forEach(f=>this.saveAddrSuggestion(f, newAddr[f]));
 
     // Address history: push old if changed
     let addressHistory=this.ePt?.addressHistory||[];
