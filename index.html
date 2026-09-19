@@ -320,6 +320,9 @@ textarea.finput{text-align:left;padding:12px 0;min-height:88px;resize:none;line-
   </div>
 </div>
 
+<!-- FILE INPUT for restore -->
+<input type="file" id="restore-input" accept=".json" style="display:none" onchange="A.doRestore(this)">
+
 <!-- ACTION SHEET -->
 <div class="sheet-bg" id="sheet-bg" onclick="A.closeSheet()"></div>
 <div class="asheet" id="asheet">
@@ -1330,9 +1333,75 @@ const A = {
   },
 
   // ── MENUS ──
+  // ── BACKUP / RESTORE ──
+  backupMenu() {
+    this._sActs=[
+      {label:'Crear respaldo (JSON)', fn:()=>this.createBackup()},
+      {label:'Restaurar desde respaldo', fn:()=>document.getElementById('restore-input').click()},
+    ];
+    this.renderSheet(this._sActs);
+  },
+
+  createBackup() {
+    const data={
+      version:1,
+      createdAt:new Date().toISOString(),
+      patients: this.patients,
+      addrSuggestions:{
+        colonia:  this.addrSuggestions('colonia'),
+        fracc:    this.addrSuggestions('fracc'),
+        calle:    this.addrSuggestions('calle'),
+      }
+    };
+    const json=JSON.stringify(data,null,2);
+    const blob=new Blob([json],{type:'application/json'});
+    const fname=`bitacora_respaldo_${today()}.json`;
+    const file=new File([blob],fname,{type:'application/json'});
+    if (navigator.canShare&&navigator.canShare({files:[file]})) {
+      navigator.share({files:[file],title:fname}).catch(()=>this._download(blob,fname));
+    } else { this._download(blob,fname); }
+  },
+
+  doRestore(input) {
+    const file=input.files[0]; input.value='';
+    if (!file) return;
+    const reader=new FileReader();
+    reader.onload=e=>{
+      try {
+        const data=JSON.parse(e.target.result);
+        if (!Array.isArray(data.patients)) throw new Error('Formato inválido');
+        const count=data.patients.length;
+        this.showAlert(
+          'Restaurar respaldo',
+          `El archivo contiene ${count} paciente${count!==1?'s':''}. Esto reemplazará todos los datos actuales. ¿Continuar?`,
+          [
+            {label:'Cancelar',bold:true},
+            {label:'Restaurar',dest:true,fn:()=>{
+              this.patients=data.patients;
+              this.persist();
+              // Restore addr suggestions if present
+              if (data.addrSuggestions) {
+                ['colonia','fracc','calle'].forEach(f=>{
+                  if (Array.isArray(data.addrSuggestions[f]))
+                    localStorage.setItem(`bm-addr-${f}`,JSON.stringify(data.addrSuggestions[f]));
+                });
+              }
+              this.renderList();
+              this.showAlert('Restaurado',`${count} paciente${count!==1?'s':''} restaurado${count!==1?'s':''} correctamente.`);
+            }}
+          ]
+        );
+      } catch {
+        this.showAlert('Error','El archivo no es un respaldo válido de Bitácora Médica.');
+      }
+    };
+    reader.readAsText(file);
+  },
+
   globalMenu() {
     this._sActs=[
       {label:'Estadísticas', fn:()=>this.go('stats')},
+      {label:'Respaldos ↕', fn:()=>this.backupMenu()},
       {label:'Exportar todo a Excel', fn:()=>this.exportAll()},
       {label:'Exportar por período', fn:()=>this.periodMenu()},
       {label:'Exportar mapa KML (INEGI)', fn:()=>this.exportKML()},
