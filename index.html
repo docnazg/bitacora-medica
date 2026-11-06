@@ -1693,44 +1693,43 @@ const A = {
     catch(e) { this.showAlert('Error al exportar', 'No se pudo generar el archivo: ' + e.message); return; }
 
     const blob = new Blob([buf], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-    // 1. Intentar Share API con archivo (iOS 15+, Android Chrome)
-    const file = new File([blob], filename, {type: blob.type});
-    if (navigator.canShare && navigator.canShare({files:[file]})) {
-      navigator.share({files:[file], title:filename})
-        .catch(err => { if (err?.name !== 'AbortError') this._openBlob(blob, filename); });
-      return;
+    if (isMobile) {
+      // Móvil: Share API primero (iOS/Android), luego window.open como fallback
+      const file = new File([blob], filename, {type: blob.type});
+      if (navigator.canShare && navigator.canShare({files:[file]})) {
+        navigator.share({files:[file], title:filename})
+          .catch(err => { if (err?.name !== 'AbortError') this._mobileOpenBlob(blob, filename); });
+        return;
+      }
+      this._mobileOpenBlob(blob, filename);
+    } else {
+      // Escritorio: <a download> directo — siempre funciona en Chrome/Safari/Firefox
+      this._desktopDownload(blob, filename);
     }
-
-    this._openBlob(blob, filename);
   },
 
-  _openBlob(blob, filename) {
+  _desktopDownload(blob, filename) {
     const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  },
 
-    // 2. Intentar abrir en nueva pestaña (funciona en Safari PWA)
+  _mobileOpenBlob(blob, filename) {
+    // En iOS PWA el <a download> no funciona; window.open con blob sí abre en Safari
+    const url = URL.createObjectURL(blob);
     const win = window.open(url, '_blank');
-    if (win) {
-      setTimeout(() => URL.revokeObjectURL(url), 30000);
-      return;
+    if (!win) {
+      this.showAlert('Descarga lista', 'Permite las ventanas emergentes en Safari o exporta abriendo la app desde Safari directamente.', [{label:'OK'}]);
     }
-
-    // 3. Fallback: link de descarga clásico
-    try {
-      const a = document.createElement('a');
-      a.href = url; a.download = filename;
-      document.body.appendChild(a); a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 5000);
-    } catch(e) {
-      // 4. Último recurso: mostrar instrucciones
-      this.showAlert(
-        'Archivo listo',
-        'Tu navegador bloqueó la descarga automática. Abre la app desde Safari (no desde el ícono) y exporta desde ahí.',
-        [{label:'OK'}]
-      );
-      URL.revokeObjectURL(url);
-    }
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
   },
 
   exportPt(id) {
