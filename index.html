@@ -1454,6 +1454,25 @@ const A = {
   },
 
   // ── MENUS ──
+  // ── FORCE UPDATE ──
+  forceUpdate() {
+    this.showAlert('Actualizar app', '¿Buscar e instalar la versión más reciente? La app se reiniciará.', [
+      {label:'Cancelar', bold:true},
+      {label:'Actualizar', fn: async () => {
+        try {
+          // Borrar todos los caches
+          const keys = await caches.keys();
+          await Promise.all(keys.map(k => caches.delete(k)));
+          // Desregistrar service worker
+          const regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map(r => r.unregister()));
+        } catch(e) {}
+        // Recargar sin caché
+        location.reload(true);
+      }}
+    ]);
+  },
+
   // ── BACKUP / RESTORE ──
   backupMenu() {
     this._sActs=[
@@ -1522,6 +1541,7 @@ const A = {
   globalMenu() {
     this._sActs=[
       {label:'Estadísticas', fn:()=>this.go('stats')},
+      {label:'🔄 Buscar actualización', fn:()=>this.forceUpdate()},
       {label:'Respaldos ↕', fn:()=>this.backupMenu()},
       {label:'Exportar todo a Excel', fn:()=>this.exportAll()},
       {label:'Exportar por período', fn:()=>this.periodMenu()},
