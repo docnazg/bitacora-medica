@@ -1543,6 +1543,7 @@ const A = {
       {label:'Estadísticas', fn:()=>this.go('stats')},
       {label:'🔄 Buscar actualización', fn:()=>this.forceUpdate()},
       {label:'Respaldos ↕', fn:()=>this.backupMenu()},
+      {label:'Exportar CSV (abre en Excel)', fn:()=>this.exportCSV()},
       {label:'Exportar todo a Excel', fn:()=>this.exportAll()},
       {label:'Exportar por período', fn:()=>this.periodMenu()},
       {label:'Exportar mapa KML (INEGI)', fn:()=>this.exportKML()},
@@ -1762,6 +1763,39 @@ const A = {
       ])
     ]),'Consultas');
     this._shareOrDownload(wb,`${p.name.replace(/\s+/g,'_')}_bitacora.xlsx`);
+  },
+
+  exportCSV() {
+    const q = (s) => '"' + String(s||'').replace(/"/g,'""') + '"';
+    const headers = ['Fecha','Paciente','Edad','Sexo','Estado','Municipio','Colonia',
+      'Peso kg','PA Sys','PA Dia','Temp °C','FC lpm',
+      'Horas Ayuno','Glucosa Ayuno','Glucosa Post','Trigliceridos','Colesterol',
+      'Ayuda Tecnica','Diagnosticos','Medicamentos','Notas'];
+    const rows = [headers.map(q).join(',')];
+
+    this.patients.forEach(p => {
+      const age = calcAge(p.dob) ?? '';
+      (p.visits||[]).forEach(v => {
+        rows.push([
+          v.date, p.name, age,
+          p.sex==='M'?'Masculino':p.sex==='F'?'Femenino':'',
+          p.estado||'', p.municipio||'', p.colonia||'',
+          v.weight||'', v.bpSystolic||'', v.bpDiastolic||'',
+          v.temperature||'', v.heartRate||'',
+          v.horasAyuno||'', v.glucosaAyuno||'', v.glucosaPost||'',
+          v.trigliceridos||'', v.colesterol||'',
+          v.ayudaTecnica ? (v.ayudaTecnicaItems||[]).join('; ')||'Sí' : 'No',
+          (v.diagnoses||[]).join('; '),
+          (v.medications||[]).map(m=>`${m.name} ${m.dose}`).join('; '),
+          v.notes||''
+        ].map(q).join(','));
+      });
+    });
+
+    // BOM para que Excel abra con acentos correctos
+    const csv = '﻿' + rows.join('\r\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    this._desktopDownload(blob, `bitacora_${today()}.csv`);
   },
 
   exportAll() {
