@@ -198,6 +198,13 @@ textarea.finput{text-align:left;padding:12px 0;min-height:88px;resize:none;line-
 .addr-hist-row:not(:last-child)::after{content:'';position:absolute;bottom:0;left:16px;right:0;height:.5px;background:var(--sep)}
 .addr-hist-date{font-size:11px;color:var(--text2);margin-bottom:2px}
 
+/* Ayuda técnica checkboxes */
+.at-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:4px 0}
+.at-item{display:flex;align-items:center;padding:10px 16px;gap:10px;position:relative;cursor:pointer;touch-action:manipulation}
+.at-item:active{background:rgba(0,0,0,.04)}
+.at-item input[type=checkbox]{width:20px;height:20px;accent-color:var(--blue);flex-shrink:0;cursor:pointer}
+.at-item label{font-size:15px;cursor:pointer;user-select:none;-webkit-user-select:none}
+
 /* Month bar chart */
 .bar-chart{display:flex;align-items:flex-end;gap:4px;padding:10px 16px 4px;height:80px}
 .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
@@ -1008,6 +1015,29 @@ const A = {
       </div>
     </div>
     <div class="form-sec">
+      <div class="form-hdr">Ayuda Técnica</div>
+      <div class="card">
+        <div class="frow" style="cursor:pointer" onclick="A.toggleAT()">
+          <span class="flabel">¿Utiliza ayuda técnica?</span>
+          <span id="vf-at-lbl" style="font-size:17px;color:${v?.ayudaTecnica?'var(--blue)':'var(--text2)'}">
+            ${v?.ayudaTecnica ? 'Sí' : 'No'}
+          </span>
+          <input type="checkbox" id="vf-at-toggle" ${v?.ayudaTecnica?'checked':''} style="display:none">
+        </div>
+        <div id="vf-at-opts" style="display:${v?.ayudaTecnica?'block':'none'}">
+          <div style="height:.5px;background:var(--sep);margin:0 16px"></div>
+          <div class="at-grid">
+            ${['Andadera','Aparato auditivo','Bastón','Implante coclear','Lentes','Muletas','Ortesis','Prótesis','Silla de ruedas'].map(item=>`
+            <div class="at-item">
+              <input type="checkbox" id="vf-at-${item.replace(/\s/g,'_')}"
+                ${(v?.ayudaTecnicaItems||[]).includes(item)?'checked':''}>
+              <label for="vf-at-${item.replace(/\s/g,'_')}">${item}</label>
+            </div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-sec">
       <div class="form-hdr">Diagnósticos</div>
       <div class="card">
         <div class="tags" id="vf-tags">${this.tagsHtml(this.tDiags,'vf')}</div>
@@ -1037,6 +1067,16 @@ const A = {
     <div style="height:24px"></div>`;
   },
 
+  toggleAT() {
+    const cb=document.getElementById('vf-at-toggle');
+    const lbl=document.getElementById('vf-at-lbl');
+    const opts=document.getElementById('vf-at-opts');
+    cb.checked=!cb.checked;
+    lbl.textContent=cb.checked?'Sí':'No';
+    lbl.style.color=cb.checked?'var(--blue)':'var(--text2)';
+    opts.style.display=cb.checked?'block':'none';
+  },
+
   saveVForm() {
     const date=document.getElementById('vf-date')?.value;
     if (!date) { this.showAlert('Fecha requerida','Selecciona la fecha de la consulta.'); return; }
@@ -1047,6 +1087,11 @@ const A = {
       bpDiastolic: parseInt(document.getElementById('vf-dia')?.value)||0,
       temperature: parseFloat(document.getElementById('vf-temp')?.value)||0,
       heartRate:   parseInt(document.getElementById('vf-hr')?.value)||0,
+      ayudaTecnica: document.getElementById('vf-at-toggle')?.checked||false,
+      ayudaTecnicaItems: document.getElementById('vf-at-toggle')?.checked
+        ? ['Andadera','Aparato auditivo','Bastón','Implante coclear','Lentes','Muletas','Ortesis','Prótesis','Silla de ruedas']
+            .filter(item=>document.getElementById('vf-at-'+item.replace(/\s/g,'_'))?.checked)
+        : [],
       horasAyuno:   parseFloat(document.getElementById('vf-horasayuno')?.value)||0,
       glucosaAyuno: parseInt(document.getElementById('vf-glu')?.value)||0,
       glucosaPost:  parseInt(document.getElementById('vf-glup')?.value)||0,
@@ -1080,6 +1125,17 @@ const A = {
     if (!v.weight&&!v.bpSystolic&&!v.temperature&&!v.heartRate)
       h+=`<div style="padding:14px 16px;color:var(--text2);font-size:15px">Sin signos registrados</div>`;
     h+='</div>';
+
+    // Ayuda técnica
+    if (v.ayudaTecnica) {
+      h+=`<div class="sec-hdr">Ayuda Técnica</div><div class="card">
+        <div class="tags" style="padding:12px 16px">
+          ${(v.ayudaTecnicaItems||[]).length
+            ? (v.ayudaTecnicaItems).map(i=>`<div class="tag">${esc(i)}</div>`).join('')
+            : '<span style="color:var(--text2);font-size:15px">Sí (sin especificar)</span>'}
+        </div>
+      </div>`;
+    }
 
     // Química sanguínea
     const hasChemistry=v.glucosaAyuno||v.glucosaPost||v.trigliceridos||v.colesterol;
