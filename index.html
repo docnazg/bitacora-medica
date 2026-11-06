@@ -1612,18 +1612,35 @@ const A = {
 
   // ── EXPORT ──
   _shareOrDownload(wb,filename) {
-    const buf=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+    let buf;
+    try { buf=XLSX.write(wb,{bookType:'xlsx',type:'array'}); }
+    catch(e) { this.showAlert('Error al exportar','No se pudo generar el archivo: '+e.message); return; }
     const blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
     const file=new File([blob],filename,{type:blob.type});
-    if (navigator.canShare&&navigator.canShare({files:[file]})) {
-      navigator.share({files:[file],title:filename}).catch(()=>this._download(blob,filename));
-    } else { this._download(blob,filename); }
+    // iOS Safari: share con archivo funciona mejor que download
+    if (navigator.canShare && navigator.canShare({files:[file]})) {
+      navigator.share({files:[file],title:filename,text:filename})
+        .catch(err=>{
+          // Usuario canceló el share — no es un error real
+          if (err?.name==='AbortError') return;
+          this._download(blob,filename);
+        });
+    } else {
+      this._download(blob,filename);
+    }
   },
 
   _download(blob,filename) {
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(blob); a.download=filename; a.click();
-    setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+    try {
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url; a.download=filename;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(url),3000);
+    } catch(e) {
+      this.showAlert('Error','No se pudo descargar el archivo. Intenta desde Safari.');
+    }
   },
 
   exportPt(id) {
@@ -1659,7 +1676,7 @@ const A = {
   },
 
   exportAll() {
-    if (!window.XLSX) { this.showAlert('Sin conexión','Necesitas internet la primera vez para exportar.'); return; }
+    if (!window.XLSX) { this.showAlert('Librería no cargada','Necesitas conexión a internet la primera vez. Conéctate y vuelve a intentarlo.'); return; }
     const wb=XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
       ['Nombre','Fecha Nac.','Edad','Sexo','Estado','Municipio','Colonia','Peso','Talla','IMC','Diagnósticos','Consultas'],
