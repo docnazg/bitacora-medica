@@ -1767,9 +1767,7 @@ const A = {
 
   exportAll() {
     if (!window.XLSX) { this.showAlert('Librería no cargada','Necesitas conexión a internet la primera vez. Conéctate y vuelve a intentarlo.'); return; }
-    // Dar tiempo al UI para mostrar feedback antes de bloquear el hilo
-    this.showAlert('Generando archivo…', `Preparando ${this.patients.length} pacientes. Un momento...`, []);
-    setTimeout(() => { this.closeModal(); this._doExportAll(); }, 100);
+    this._doExportAll();
   },
 
   _doExportAll() {

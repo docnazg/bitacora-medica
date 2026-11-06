@@ -1,4 +1,4 @@
-const CACHE = 'bitacora-v15';
+const CACHE = 'bitacora-v16';
 const ASSETS = [
   './',
   './index.html',
