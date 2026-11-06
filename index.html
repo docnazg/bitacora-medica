@@ -1687,35 +1687,49 @@ const A = {
   },
 
   // ── EXPORT ──
-  _shareOrDownload(wb,filename) {
+  _shareOrDownload(wb, filename) {
     let buf;
-    try { buf=XLSX.write(wb,{bookType:'xlsx',type:'array'}); }
-    catch(e) { this.showAlert('Error al exportar','No se pudo generar el archivo: '+e.message); return; }
-    const blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-    const file=new File([blob],filename,{type:blob.type});
-    // iOS Safari: share con archivo funciona mejor que download
+    try { buf = XLSX.write(wb, {bookType:'xlsx', type:'array'}); }
+    catch(e) { this.showAlert('Error al exportar', 'No se pudo generar el archivo: ' + e.message); return; }
+
+    const blob = new Blob([buf], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+
+    // 1. Intentar Share API con archivo (iOS 15+, Android Chrome)
+    const file = new File([blob], filename, {type: blob.type});
     if (navigator.canShare && navigator.canShare({files:[file]})) {
-      navigator.share({files:[file],title:filename,text:filename})
-        .catch(err=>{
-          // Usuario canceló el share — no es un error real
-          if (err?.name==='AbortError') return;
-          this._download(blob,filename);
-        });
-    } else {
-      this._download(blob,filename);
+      navigator.share({files:[file], title:filename})
+        .catch(err => { if (err?.name !== 'AbortError') this._openBlob(blob, filename); });
+      return;
     }
+
+    this._openBlob(blob, filename);
   },
 
-  _download(blob,filename) {
+  _openBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+
+    // 2. Intentar abrir en nueva pestaña (funciona en Safari PWA)
+    const win = window.open(url, '_blank');
+    if (win) {
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
+      return;
+    }
+
+    // 3. Fallback: link de descarga clásico
     try {
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement('a');
-      a.href=url; a.download=filename;
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
       document.body.appendChild(a); a.click();
       document.body.removeChild(a);
-      setTimeout(()=>URL.revokeObjectURL(url),3000);
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
     } catch(e) {
-      this.showAlert('Error','No se pudo descargar el archivo. Intenta desde Safari.');
+      // 4. Último recurso: mostrar instrucciones
+      this.showAlert(
+        'Archivo listo',
+        'Tu navegador bloqueó la descarga automática. Abre la app desde Safari (no desde el ícono) y exporta desde ahí.',
+        [{label:'OK'}]
+      );
+      URL.revokeObjectURL(url);
     }
   },
 
@@ -1753,6 +1767,12 @@ const A = {
 
   exportAll() {
     if (!window.XLSX) { this.showAlert('Librería no cargada','Necesitas conexión a internet la primera vez. Conéctate y vuelve a intentarlo.'); return; }
+    // Dar tiempo al UI para mostrar feedback antes de bloquear el hilo
+    this.showAlert('Generando archivo…', `Preparando ${this.patients.length} pacientes. Un momento...`, []);
+    setTimeout(() => { this.closeModal(); this._doExportAll(); }, 100);
+  },
+
+  _doExportAll() {
     const wb=XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
       ['Nombre','Fecha Nac.','Edad','Sexo','Estado','Municipio','Colonia','Peso','Talla','IMC','Diagnósticos','Consultas'],
