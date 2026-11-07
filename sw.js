@@ -1,4 +1,4 @@
-const CACHE = 'bitacora-v18';
+const CACHE = 'bitacora-v19';
 const ASSETS = [
   './',
   './index.html',
@@ -27,13 +27,26 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  const req = e.request;
+  if (req.method !== 'GET') return;
+  const isPage = req.mode === 'navigate' || req.url.endsWith('index.html') || req.url.endsWith('manifest.json');
+  if (isPage) {
+    // Red primero: siempre intenta traer la versión más nueva; usa caché solo sin conexión
+    e.respondWith(
+      fetch(req, { cache: 'no-store' }).then(res => {
+        if (res.ok) { const clone = res.clone(); caches.open(CACHE).then(c => c.put(req, clone)); }
+        return res;
+      }).catch(() => caches.match(req).then(c => c || caches.match('./index.html')))
+    );
+    return;
+  }
   e.respondWith(
-    caches.match(e.request).then(cached => {
+    caches.match(req).then(cached => {
       if (cached) return cached;
-      return fetch(e.request).then(res => {
+      return fetch(req).then(res => {
         if (res.ok) {
           const clone = res.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
+          caches.open(CACHE).then(c => c.put(req, clone));
         }
         return res;
       }).catch(() => cached);
